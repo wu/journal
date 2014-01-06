@@ -71,9 +71,7 @@ Somewhere in the stack it was getting confusing and evaluating the
 contents of foo.pl as if it were a bash script.
 
 I started writing test cases to try and figure out exactly where
-things were going wrong.  The results can be found here:
-
-    https://gist.github.com/wu/8119651
+things were going wrong.  The results can be found [[https://gist.github.com/wu/8119651][here]]
 
 My test cases can be run like so:
 
@@ -94,9 +92,7 @@ that bash does not support 'nested shebangs', i.e a shebang that
 points at a script that itself begins with a shebang.  I did not find
 that to be the case on recent versions of bash on any OS I tried.
 
-I submitted a bug report here:
-
-    https://github.com/tokuhirom/plenv/issues/63
+I submitted a bug report [[https://github.com/tokuhirom/plenv/issues/63][here]].
 
 From my cursory comparison, it seems that the plenv bash scripts are
 just rbenv with s/rbenv/plenv/g and s/ruby/perl/g.  So this bug may
