@@ -1,6 +1,6 @@
 * Plenv shebang
   :PROPERTIES:
-  :ID:       6D2A07D0-104F-4127-8F2A-76325FEA4D56
+  :ID:       CCE505BA-A7B7-4AFD-A053-F5154E6A3DE0
   :END:
 
 Plenv is a great tool.  It is a perl-based version of ruby's rbenv.
@@ -10,8 +10,10 @@ switching over all my projects.  Then I started seeing some strange
 output from some of my cron jobs.  I was seeing error messages like
 this in my logs/email on OS X:
 
+#+BEGIN_EXAMPLE
     line 3: use: command not found
     line 5: print: command not found
+#+END_EXAMPLE
 
 I looked at it long enough to see that it was confusing, and then I
 put it on the back burner for a while.  A month or so later, I started
@@ -22,9 +24,11 @@ I realized pretty quickly that my perl script was being executed by
 bash rather than by perl.  So the obvious work-around was the secret
 sauce from the perlrun manpage, which did the trick:
 
+#+BEGIN_EXAMPLE
     #!/opt/boxen/plenv/shims/perl
     eval 'exec perl -x -wS $0 ${1+"$@"}'
         if 0;
+#+END_EXAMPLE
 
 But that was an obvious hack, and I couldn't resist digging deeper to
 see where things went awry.
@@ -32,26 +36,36 @@ see where things went awry.
 When I execute a perl script using plenv from the command line, I ran
 this:
 
+#+BEGIN_EXAMPLE
     ./foo.pl
+#+END_EXAMPLE
 
 This caused the shebang to kick in, which contained something like
 this:
 
+#+BEGIN_EXAMPLE
     #!/opt/boxen/plenv/shims/perl
+#+END_EXAMPLE
 
 The shebang here points to the plenv perl shim, which is a bash
 script.  The shim then ran this command:
 
+#+BEGIN_EXAMPLE
     exec /opt/boxen/plenv/libexec/plenv exec perl foo.pl
+#+END_EXAMPLE
 
 The plenv script is also a bash script, which in turn ran:
 
+#+BEGIN_EXAMPLE
     exec /opt/boxen/plenv/libexec/plenv-exec perl broken.t
+#+END_EXAMPLE
 
 And plenv-exec is also a bash script, which finally exec'd the
 appropriate version of the perl binary, like so:
 
+#+BEGIN_EXAMPLE
     exec -a perl /opt/boxen/plenv/versions/5.18.1/bin/perl foo.pl
+#+END_EXAMPLE
 
 Somewhere in the stack it was getting confusing and evaluating the
 contents of foo.pl as if it were a bash script.
@@ -63,7 +77,9 @@ things were going wrong.  The results can be found here:
 
 My test cases can be run like so:
 
+#+BEGIN_EXAMPLE
     curl -fsSkL https://gist.github.com/wu/8119651/raw | perl -
+#+END_EXAMPLE
 
 The bug seems to happen when a perl script has a shebang that points
 to a bash script that execs perl.
@@ -87,4 +103,3 @@ just rbenv with s/rbenv/plenv/g and s/ruby/perl/g.  So this bug may
 also affect rbenv.  I see some similar reports with rbenv, but not as
 many as I would expect.  I am learning ruby now, so perhaps I'll have
 some better insight into this in the future.
-
