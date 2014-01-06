@@ -10,8 +10,8 @@ switching over all my projects.  Then I started seeing some strange
 output from some of my cron jobs.  I was seeing error messages like
 this in my logs/email on OS X:
 
-  line 3: use: command not found
-  line 5: print: command not found
+    line 3: use: command not found
+    line 5: print: command not found
 
 I looked at it long enough to see that it was confusing, and then I
 put it on the back burner for a while.  A month or so later, I started
@@ -22,9 +22,9 @@ I realized pretty quickly that my perl script was being executed by
 bash rather than by perl.  So the obvious work-around was the secret
 sauce from the perlrun manpage, which did the trick:
 
-  #!/opt/boxen/plenv/shims/perl
-  eval 'exec perl -x -wS $0 ${1+"$@"}'
-      if 0;
+    #!/opt/boxen/plenv/shims/perl
+    eval 'exec perl -x -wS $0 ${1+"$@"}'
+        if 0;
 
 But that was an obvious hack, and I couldn't resist digging deeper to
 see where things went awry.
@@ -32,26 +32,26 @@ see where things went awry.
 When I execute a perl script using plenv from the command line, I ran
 this:
 
-  ./foo.pl
+    ./foo.pl
 
 This caused the shebang to kick in, which contained something like
 this:
 
-  #!/opt/boxen/plenv/shims/perl
+    #!/opt/boxen/plenv/shims/perl
 
 The shebang here points to the plenv perl shim, which is a bash
 script.  The shim then ran this command:
 
-  exec /opt/boxen/plenv/libexec/plenv exec perl foo.pl
+    exec /opt/boxen/plenv/libexec/plenv exec perl foo.pl
 
 The plenv script is also a bash script, which in turn ran:
 
-  exec /opt/boxen/plenv/libexec/plenv-exec perl broken.t
+    exec /opt/boxen/plenv/libexec/plenv-exec perl broken.t
 
 And plenv-exec is also a bash script, which finally exec'd the
 appropriate version of the perl binary, like so:
 
-  exec -a perl /opt/boxen/plenv/versions/5.18.1/bin/perl foo.pl
+    exec -a perl /opt/boxen/plenv/versions/5.18.1/bin/perl foo.pl
 
 Somewhere in the stack it was getting confusing and evaluating the
 contents of foo.pl as if it were a bash script.
@@ -59,11 +59,11 @@ contents of foo.pl as if it were a bash script.
 I started writing test cases to try and figure out exactly where
 things were going wrong.  The results can be found here:
 
-  https://gist.github.com/wu/8119651
+    https://gist.github.com/wu/8119651
 
 My test cases can be run like so:
 
-  curl -fsSkL https://gist.github.com/wu/8119651/raw | perl -
+    curl -fsSkL https://gist.github.com/wu/8119651/raw | perl -
 
 The bug seems to happen when a perl script has a shebang that points
 to a bash script that execs perl.
@@ -80,7 +80,7 @@ that to be the case on recent versions of bash on any OS I tried.
 
 I submitted a bug report here:
 
-  https://github.com/tokuhirom/plenv/issues/63
+    https://github.com/tokuhirom/plenv/issues/63
 
 From my cursory comparison, it seems that the plenv bash scripts are
 just rbenv with s/rbenv/plenv/g and s/ruby/perl/g.  So this bug may
