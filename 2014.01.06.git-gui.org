@@ -1,4 +1,4 @@
-* Git Gui
+* Git Gui, Tower, and Emacs Magit
   :PROPERTIES:
   :ID:       A16A74AC-C5A7-494D-A3A0-0ADD05F42DF0
   :END:
