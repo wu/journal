@@ -1,0 +1,70 @@
+* Git Gui
+  :PROPERTIES:
+  :ID:       A16A74AC-C5A7-494D-A3A0-0ADD05F42DF0
+  :END:
+
+I'm generally more at home at the command line than in a GUI.  So I
+generally prefer to interact with git in an xterm.  But when it comes
+to staging changes and preparing a commit message, I just couldn't get
+comfortable with a workflow.  Even with one letter aliases and tab
+completion, it was just too slow and awkward.
+
+The git gui is pretty sweet for this purpose.  I've used it for a long
+time and been quite happy with it. I have noticed on every OS X
+machines I've used was that some of the keystrokes (e.g. revert
+changes) fail or causes the gui to hang--although they work fine when
+chosen with the mouse from the menu.
+
+I also spent some time trying out the Tower git client.  I was mostly
+happy with the git gui, but there were a few features in Tower that I
+really appreciated.  It had a dashboard where I could browse my local
+repos, and it was possible to stage a hunk of a file (as in git add
+-i).  And everything was totally solid and pretty intuitive.
+
+The main issue I had with Tower was with wrapping commit
+messages. [[http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html][This]] is the advice I try to follow.  The commit message
+window made it look like my comments was being wrapped at the right
+place, but in fact they contained a number of very long lines.  I
+polluted a few of my project's commit logs before I realized my
+mistake.  There does not seem to be any way to force wrap or reflow a
+manually wrapped paragraph in the commit message!  I was shocked to
+see that other folks were not also complaining about this!  I
+eventually widened the commit message window enough that it was
+obvious when my commit message was getting too long.  To reflow the
+text, I started copying/pasting my commit message from emacs.
+
+So I was determined to explore the options in emacs.  After some
+searching and reading, I decided to try out magit.  And I am SO glad I
+did!!!  My emacs config is [[https://github.com/wu/dotfiles/blob/master/emacs/init/08_vcs.el][here]].
+
+I found [[http://www.masteringemacs.org/articles/2013/12/06/introduction-magit-emacs-mode-git/][this article]] to be incredibly helpful.  Here are a few other
+useful links.
+
+  - http://magit.github.io
+
+  - https://github.com/magit/magit
+
+I ran into one issue when I went to commit changes.  Magit runs the
+command 'git --no-pager commit', which was trying to spawn an extra
+instance of emacs rather than using my emacsclient.  I just needed to
+adjust magit-emacsclient-executable to call the appropriate
+emacsclient, and also make sure it could find the socket for my
+server.  I installed emacs from [[http://brew.sh][homebrew]] via [[http://boxen.github.com][boxen]]; you may need to
+adjust the paths for your environment.
+
+#+BEGIN_EXAMPLE
+
+; set the socket directory
+(setq server-socket-dir (format "/tmp/emacs%d" (user-uid)))
+
+; start the server
+(server-start)
+
+; tell magit how to get to the server
+(set-variable 'magit-emacsclient-executable "/opt/boxen/homebrew/bin/emacsclient --socket-name /tmp/emacs501/server")
+
+#+END_EXAMPLE
+
+
+
+
