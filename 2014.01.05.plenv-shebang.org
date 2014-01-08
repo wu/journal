@@ -11,9 +11,8 @@ output from some of my cron jobs.  I was seeing error messages like
 this in my logs/email on OS X:
 
 #+begin_src sh
-
-    line 3: use: command not found
-    line 5: print: command not found
+  line 3: use: command not found
+  line 5: print: command not found
 
 #+end_src
 
@@ -27,10 +26,9 @@ bash rather than by perl.  So the obvious work-around was the secret
 sauce from the perlrun manpage, which did the trick:
 
 #+begin_src sh
-
-    #!/opt/boxen/plenv/shims/perl
-    eval 'exec perl -x -wS $0 ${1+"$@"}'
-        if 0;
+  #!/opt/boxen/plenv/shims/perl
+  eval 'exec perl -x -wS $0 ${1+"$@"}'
+      if 0;
 
 #+end_src
 
@@ -42,14 +40,13 @@ script directly on the command line that has the plenv perl shim in
 the shebang, it works fine.
 
 #+begin_src sh
+  # create and test the perl script
+  echo '#!/opt/boxen/plenv/shims/perl' > foo.pl
+  echo 'print "testing 1 2 3\n";' >> foo.pl
+  chmod a+x foo.pl
+  ./foo.pl
 
-    # create and test the perl script
-    echo '#!/opt/boxen/plenv/shims/perl' > foo.pl
-    echo 'print "testing 1 2 3\n";' >> foo.pl
-    chmod a+x foo.pl
-    ./foo.pl
-
-    # output: testing 1 2 3
+  # output: testing 1 2 3
 
 #+end_src
 
@@ -57,28 +54,26 @@ But when I call that same script from a shell script wrapper, it runs
 into problems:
 
 #+begin_src sh
+  # create and run the shell script wrapper
+  echo '#!/usr/bin/env bash' > foo.sh
+  echo "./foo.pl" >> foo.sh
+  chmod a+x foo.sh
+  ./foo.sh
 
-    # create and run the shell script wrapper
-    echo '#!/usr/bin/env bash' > foo.sh
-    echo "./foo.pl" >> foo.sh
-    chmod a+x foo.sh
-    ./foo.sh
-
-    # output: ./foo.pl: line 2: print: command not found
+  # output: ./foo.pl: line 2: print: command not found
 
 #+end_src
 
 Interestingly the bug does not happen if the wrapper script is written in zsh:
 
 #+begin_src sh
+  # create and run the shell script wrapper
+  echo '#!/usr/bin/env zsh' > foo.zsh
+  echo "./foo.pl" >> foo.zsh
+  chmod a+x foo.zsh
+  ./foo.zsh
 
-    # create and run the shell script wrapper
-    echo '#!/usr/bin/env zsh' > foo.zsh
-    echo "./foo.pl" >> foo.zsh
-    chmod a+x foo.zsh
-    ./foo.zsh
-
-    # output: testing 1 2 3
+  # output: testing 1 2 3
 
 #+end_src
 
@@ -88,16 +83,14 @@ shim, which is actually a bash script.  The shim then runs this
 command:
 
 #+begin_src sh
-
-    exec /opt/boxen/plenv/libexec/plenv exec perl foo.pl
+  exec /opt/boxen/plenv/libexec/plenv exec perl foo.pl
 
 #+end_src
 
 The plenv script is also a bash script, which in turn runs:
 
 #+begin_src sh
-
-    exec /opt/boxen/plenv/libexec/plenv-exec perl foo.pl
+  exec /opt/boxen/plenv/libexec/plenv-exec perl foo.pl
 
 #+end_src
 
@@ -105,8 +98,7 @@ And plenv-exec is also a bash script, which finally runs my script
 with the appropriate version of the perl binary, like so:
 
 #+begin_src sh
-
-    exec -a perl /opt/boxen/plenv/versions/5.18.1/bin/perl foo.pl
+  exec -a perl /opt/boxen/plenv/versions/5.18.1/bin/perl foo.pl
 
 #+end_src
 
@@ -126,19 +118,18 @@ I did not find that to be the case on recent versions of bash on any
 OS I tried:
 
 #+begin_src sh
+  # create the simplest possible bash shim
+  echo '#!/usr/bin/env bash' > foo-shim.sh
+  echo 'exec bash "$@"' >> foo-shim.sh
+  chmod a+x foo-shim.sh
 
-    # create the simplest possible bash shim
-    echo '#!/usr/bin/env bash' > foo-shim.sh
-    echo 'exec bash "$@"' >> foo-shim.sh
-    chmod a+x foo-shim.sh
+  # create a bash script that uses the shim
+  echo "#\!$(pwd)/foo-shim.sh" > foo.sh
+  echo 'echo "testing 1 2 3"' >> foo.sh
+  chmod a+x foo.sh
+  ./foo.sh
 
-    # create a bash script that uses the shim
-    echo "#\!$(pwd)/foo-shim.sh" > foo.sh
-    echo 'echo "testing 1 2 3"' >> foo.sh
-    chmod a+x foo.sh
-    ./foo.sh
-
-    # output: testing 1 2 3
+  # output: testing 1 2 3
 
 #+end_src
 
@@ -149,20 +140,18 @@ mostly rbenv with s/rbenv/plenv/g and s/ruby/perl/g.  So I was
 assuming this bug would also affect rbenv.  And it appears that is true:
 
 #+begin_src sh
+  # create and test the ruby script
+  echo '#!/opt/boxen/rbenv/shims/ruby' > foo.rb
+  echo 'puts("testing 1 2 3")' >> foo.rb
+  chmod a+x foo.rb
+  ./foo.rb
+  # output: testing 1 2 3
 
-    # create and test the ruby script
-    echo '#!/opt/boxen/rbenv/shims/ruby' > foo.rb
-    echo 'puts("testing 1 2 3")' >> foo.rb
-    chmod a+x foo.rb
-    ./foo.rb
-    # output: testing 1 2 3
-
-    # create the shell script wrapper
-    echo '#!/usr/bin/env bash' > foo.sh
-    echo "./foo.rb" >> foo.sh
-    chmod a+x foo.sh
-    ./foo.sh
-    # output: ./foo.rb: line 2: syntax error near unexpected token `"testing 1 2 3"'
+  # create the shell script wrapper
+  echo '#!/usr/bin/env bash' > foo.sh
+  echo "./foo.rb" >> foo.sh
+  chmod a+x foo.sh
+  ./foo.sh
+  # output: ./foo.rb: line 2: syntax error near unexpected token `"testing 1 2 3"'
 
 #+end_src
-
