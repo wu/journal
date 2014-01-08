@@ -114,8 +114,8 @@ and the issue affected OS X, FreeBSD, and Solaris--but not Linux.
 I started searching and found a number of older references including
 [[http://lists.netisland.net/archives/phlpm/phlpm-2000/msg00391.html][this one]] mentioning that bash does not support 'nested shebangs', i.e
 a shebang that points at a script that itself begins with a shebang.
-I did not find that to be the case on recent versions of bash on any
-OS I tried:
+There is some great information [[http://www.in-ulm.de/~mascheck/various/shebang/#interpreter-script][here]].  I did not find any problems
+with nested shebangs on recent versions of bash on any OS I tried.
 
 #+begin_src sh
   # create the simplest possible bash shim
