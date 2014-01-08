@@ -18,9 +18,9 @@ this in my logs/email on OS X:
 #+END_EXAMPLE
 
 I looked at it long enough to see that it was confusing, and then I
-put it on the back burner for a while.  A month or so later, I started
-seeing a similar problem on Solaris.  So I decided it was time to look
-a little deeper.
+put it on the back burner for a while.  A little while later, I
+started seeing a similar problem on Solaris.  So I decided it was time
+to look a little deeper.
 
 I realized pretty quickly that my perl script was being executed by
 bash rather than by perl.  So the obvious work-around was the secret
@@ -37,26 +37,55 @@ sauce from the perlrun manpage, which did the trick:
 But that was an obvious hack, and I couldn't resist digging deeper to
 see where things went awry.
 
-When I execute a perl script using plenv from the command line, I ran
-this:
+Exercising the bug is a little bit tricky.  When I execute a perl
+script directly on the command line that has the plenv perl shim in
+the shebang, it works fine.
 
 #+BEGIN_EXAMPLE
 
+    # create and test the perl script
+    echo '#!/opt/boxen/plenv/shims/perl' > foo.pl
+    echo 'print "testing 1 2 3\n";' >> foo.pl
+    chmod a+x foo.pl
     ./foo.pl
 
+    # output: testing 1 2 3
+
 #+END_EXAMPLE
 
-This caused the shebang to kick in, which contained something like
-this:
+But when I call that same script from a shell script wrapper, it runs
+into problems:
 
 #+BEGIN_EXAMPLE
 
-    #!/opt/boxen/plenv/shims/perl
+    # create and run the shell script wrapper
+    echo '#!/usr/bin/env bash' > foo.sh
+    echo "./foo.pl" >> foo.sh
+    chmod a+x foo.sh
+    ./foo.sh
+
+    # output: ./foo.pl: line 2: print: command not found
 
 #+END_EXAMPLE
 
-The shebang here points to the plenv perl shim, which is a bash
-script.  The shim then ran this command:
+Interestingly the bug does not happen if the wrapper script is written in zsh:
+
+#+BEGIN_EXAMPLE
+
+    # create and run the shell script wrapper
+    echo '#!/usr/bin/env zsh' > foo.zsh
+    echo "./foo.pl" >> foo.zsh
+    chmod a+x foo.zsh
+    ./foo.zsh
+
+    # output: testing 1 2 3
+
+#+END_EXAMPLE
+
+I started looking at the plenv scripts, hoping there might be an easy
+fix.  The shebang in the perl script above points to plenv's perl
+shim, which is actually a bash script.  The shim then runs this
+command:
 
 #+BEGIN_EXAMPLE
 
@@ -64,7 +93,7 @@ script.  The shim then ran this command:
 
 #+END_EXAMPLE
 
-The plenv script is also a bash script, which in turn ran:
+The plenv script is also a bash script, which in turn runs:
 
 #+BEGIN_EXAMPLE
 
@@ -72,8 +101,8 @@ The plenv script is also a bash script, which in turn ran:
 
 #+END_EXAMPLE
 
-And plenv-exec is also a bash script, which finally exec'd the
-appropriate version of the perl binary, like so:
+And plenv-exec is also a bash script, which finally runs my script
+with the appropriate version of the perl binary, like so:
 
 #+BEGIN_EXAMPLE
 
@@ -87,31 +116,52 @@ contents of foo.pl as if it were a bash script.
 I started writing test cases to try and figure out exactly where
 things were going wrong.  The results can be found [[https://gist.github.com/wu/8119651][here]]
 
-My test cases can be run like so:
-
-#+BEGIN_EXAMPLE
-
-    curl -fsSkL https://gist.github.com/wu/8119651/raw | perl -
-
-#+END_EXAMPLE
-
-The bug seems to happen when a perl script has a shebang that points
-to a bash script that execs perl.
-
 I did some testing on multiple versions of a few operating systems,
 and the issue affected OS X, FreeBSD, and Solaris--but not Linux.
 
-It seems that this issue affects bash, but not zsh.
+I started searching and found a number of older references including
+[[http://lists.netisland.net/archives/phlpm/phlpm-2000/msg00391.html][this one]] mentioning that bash does not support 'nested shebangs', i.e
+a shebang that points at a script that itself begins with a shebang.
+I did not find that to be the case on recent versions of bash on any
+OS I tried:
 
-I started searching and found a number of older references mentioning
-that bash does not support 'nested shebangs', i.e a shebang that
-points at a script that itself begins with a shebang.  I did not find
-that to be the case on recent versions of bash on any OS I tried.
+#+BEGIN_EXAMPLE
 
-I submitted a bug report [[https://github.com/tokuhirom/plenv/issues/63][here]].
+    # create the simplest possible bash shim
+    echo '#!/usr/bin/env bash' > foo-shim.sh
+    echo 'exec bash "$@"' >> foo-shim.sh
+    chmod a+x foo-shim.sh
+
+    # create a perl script that uses the shim
+    echo "#\!$(pwd)/foo-shim.sh" > foo.sh
+    echo 'echo "testing 1 2 3"' >> foo.sh
+    chmod a+x foo.sh
+    ./foo.sh
+
+    # output: testing 1 2 3
+
+#+END_EXAMPLE
+
+I submitted a bug report for plenv [[https://github.com/tokuhirom/plenv/issues/63][here]].
 
 From my cursory comparison, it seems that the plenv bash scripts are
-just rbenv with s/rbenv/plenv/g and s/ruby/perl/g.  So this bug may
-also affect rbenv.  I see some similar reports with rbenv, but not as
-many as I would expect.  I am learning ruby now, so perhaps I'll have
-some better insight into this in the future.
+mostly rbenv with s/rbenv/plenv/g and s/ruby/perl/g.  So I was
+assuming this bug would also affect rbenv.  And it appears that is true:
+
+#+BEGIN_EXAMPLE
+
+    # create and test the ruby script
+    echo '#!/opt/boxen/rbenv/shims/ruby' > foo.rb
+    echo 'puts("testing 1 2 3")' >> foo.rb
+    chmod a+x foo.rb
+    ./foo.rb
+    # output: testing 1 2 3
+
+    # create the shell script wrapper
+    echo '#!/usr/bin/env bash' > foo.sh
+    echo "./foo.rb" >> foo.sh
+    chmod a+x foo.sh
+    ./foo.sh
+    # output: ./foo.rb: line 2: syntax error near unexpected token `"testing 1 2 3"'
+
+#+END_EXAMPLE
