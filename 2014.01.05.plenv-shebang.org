@@ -3,7 +3,7 @@
   :ID:       CCE505BA-A7B7-4AFD-A053-F5154E6A3DE0
   :END:
 
-Plenv is a great tool.  It is a perl-based version of ruby's rbenv.
+[[https://github.com/tokuhirom/plenv][Plenv]] is a great tool.  It is the perl version of ruby's [[https://github.com/sstephenson/rbenv][rbenv]].
 
 After playing around with plenv for a while, I was hooked, and started
 switching over all my projects.  Then I started seeing some strange
