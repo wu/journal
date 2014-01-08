@@ -132,7 +132,7 @@ OS I tried:
     echo 'exec bash "$@"' >> foo-shim.sh
     chmod a+x foo-shim.sh
 
-    # create a perl script that uses the shim
+    # create a bash script that uses the shim
     echo "#\!$(pwd)/foo-shim.sh" > foo.sh
     echo 'echo "testing 1 2 3"' >> foo.sh
     chmod a+x foo.sh
