@@ -26,6 +26,11 @@ bash rather than by perl.  So the obvious work-around was the secret
 sauce from the [[perlrun]] manpage.  But that was clearly a hack, and I
 couldn't resist digging deeper to see where things went awry.
 
+** exercise the bug
+   :PROPERTIES:
+   :ID:       740A54C1-C4FA-4F69-9065-0005CABFC498
+   :END:
+
 Exercising the bug is a little bit tricky.  When I execute a perl
 script directly on the command line that has the plenv perl shim in
 the shebang, it works fine.
@@ -68,6 +73,11 @@ Interestingly the bug does not happen if the wrapper script is written in zsh:
   # output: testing 1 2 3
 
 #+end_src
+
+** searching for a plenv bug
+   :PROPERTIES:
+   :ID:       BD5ADB8D-5081-48D7-8B7A-0B7B4E1C1CD9
+   :END:
 
 I started looking at the plenv scripts, hoping there might be an easy
 fix.  The shebang in the perl script above points to plenv's perl
@@ -116,7 +126,7 @@ The [[http://perldoc.perl.org/perlrun.html][perlrun manpage]] contains a bit of 
 script with perl if it is being evaluated in a shell.
 
 #+begin_src sh
-  #!/opt/boxen/plenv/shims/perl
+  #!/bin/sh
   eval 'exec perl -x -wS $0 ${1+"$@"}'
       if 0;
 
