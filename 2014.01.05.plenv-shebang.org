@@ -23,17 +23,8 @@ to look a little deeper.
 
 I realized pretty quickly that my perl script was being executed by
 bash rather than by perl.  So the obvious work-around was the secret
-sauce from the perlrun manpage, which did the trick:
-
-#+begin_src sh
-  #!/opt/boxen/plenv/shims/perl
-  eval 'exec perl -x -wS $0 ${1+"$@"}'
-      if 0;
-
-#+end_src
-
-But that was an obvious hack, and I couldn't resist digging deeper to
-see where things went awry.
+sauce from the [[perlrun]] manpage.  But that was clearly a hack, and I
+couldn't resist digging deeper to see where things went awry.
 
 Exercising the bug is a little bit tricky.  When I execute a perl
 script directly on the command line that has the plenv perl shim in
@@ -51,7 +42,8 @@ the shebang, it works fine.
 #+end_src
 
 But when I call that same script from a shell script wrapper, it runs
-into problems:
+into problems.  Note that the shell script must run the perl script
+using the shebang to trigger the bug.
 
 #+begin_src sh
   # create and run the shell script wrapper
@@ -111,6 +103,49 @@ things were going wrong.  The results can be found [[https://gist.github.com/wu/
 I did some testing on multiple versions of a few operating systems,
 and the issue affected OS X, FreeBSD, and Solaris--but not Linux.
 
+I submitted a bug report for plenv [[https://github.com/tokuhirom/plenv/issues/63][here]], but I later closed the bug
+since this appears to be more properly classified as an issue with
+bash that affects plenv.
+
+** perlrun
+   :PROPERTIES:
+   :ID:       307F8E65-B71F-4E98-8B48-CF25D91B4D39
+   :END:
+
+The [[http://perldoc.perl.org/perlrun.html][perlrun manpage]] contains a bit of magic that will run a perl
+script with perl if it is being evaluated in a shell.
+
+#+begin_src sh
+  #!/opt/boxen/plenv/shims/perl
+  eval 'exec perl -x -wS $0 ${1+"$@"}'
+      if 0;
+
+#+end_src
+
+And that does the trick:
+
+#+begin_src sh
+  echo '#!/opt/boxen/plenv/shims/perl' > foo.pl
+  echo "eval 'exec perl -x -wS \$0 \${1+\"\$@\"}'" >> foo.pl
+  echo '    if 0;' >> foo.pl
+  echo 'print "testing 1 2 3\n";' >> foo.pl
+  chmod a+x foo.pl
+  ./foo.pl
+  # output: testing 1 2 3
+
+  echo '#!/usr/bin/env bash' > foo.sh
+  echo "./foo.pl" >> foo.sh
+  chmod a+x foo.sh
+  ./foo.sh
+  # output: testing 1 2 3
+
+#+end_src
+
+** nested shebang
+   :PROPERTIES:
+   :ID:       0EDED161-2458-4C19-A6B3-1595A9A996A3
+   :END:
+
 I started searching and found a number of older references including
 [[http://lists.netisland.net/archives/phlpm/phlpm-2000/msg00391.html][this one]] mentioning that bash does not support 'nested shebangs', i.e
 a shebang that points at a script that itself begins with a shebang.
@@ -133,28 +168,10 @@ with nested shebangs on recent versions of bash on any OS I tried.
 
 #+end_src
 
-And this example demonstrates the fix from the perlrun manpage:
-
-#+begin_src sh
-  echo '#!/opt/boxen/plenv/shims/perl' > foo.pl
-  echo "eval 'exec perl -x -wS \$0 \${1+\"\$@\"}'" >> foo.pl
-  echo '    if 0;' >> foo.pl
-  echo 'print "testing 1 2 3\n";' >> foo.pl
-  chmod a+x foo.pl
-  ./foo.pl
-  # output: testing 1 2 3
-
-  echo '#!/usr/bin/env bash' > foo.sh
-  echo "./foo.pl" >> foo.sh
-  chmod a+x foo.sh
-  ./foo.sh
-  # output: testing 1 2 3
-
-#+end_src
-
-I submitted a bug report for plenv [[https://github.com/tokuhirom/plenv/issues/63][here]], but I later closed the bug
-since this appears to be more properly classified as an issue with
-bash that affects plenv.
+** rbenv
+   :PROPERTIES:
+   :ID:       764A33B7-DB6E-44EA-8FA9-D04663D7DE58
+   :END:
 
 From my cursory comparison, it seems that the plenv bash scripts are
 mostly rbenv with s/rbenv/plenv/g and s/ruby/perl/g.  So I was
