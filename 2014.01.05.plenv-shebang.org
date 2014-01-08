@@ -23,8 +23,9 @@ to look a little deeper.
 
 I realized pretty quickly that my perl script was being executed by
 bash rather than by perl.  So the obvious work-around was the secret
-sauce from the [[perlrun]] manpage.  But that was clearly a hack, and I
-couldn't resist digging deeper to see where things went awry.
+sauce from the perlrun manpage (see below).  But that was clearly a
+hack, and I couldn't resist digging deeper to see where things went
+awry.
 
 ** exercise the bug
    :PROPERTIES:
