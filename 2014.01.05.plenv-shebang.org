@@ -97,7 +97,7 @@ The plenv script is also a bash script, which in turn runs:
 
 #+BEGIN_EXAMPLE
 
-    exec /opt/boxen/plenv/libexec/plenv-exec perl broken.t
+    exec /opt/boxen/plenv/libexec/plenv-exec perl foo.pl
 
 #+END_EXAMPLE
 
