@@ -10,12 +10,12 @@ switching over all my projects.  Then I started seeing some strange
 output from some of my cron jobs.  I was seeing error messages like
 this in my logs/email on OS X:
 
-#+BEGIN_EXAMPLE
+#+begin_src sh
 
     line 3: use: command not found
     line 5: print: command not found
 
-#+END_EXAMPLE
+#+end_src
 
 I looked at it long enough to see that it was confusing, and then I
 put it on the back burner for a while.  A little while later, I
@@ -26,13 +26,13 @@ I realized pretty quickly that my perl script was being executed by
 bash rather than by perl.  So the obvious work-around was the secret
 sauce from the perlrun manpage, which did the trick:
 
-#+BEGIN_EXAMPLE
+#+begin_src sh
 
     #!/opt/boxen/plenv/shims/perl
     eval 'exec perl -x -wS $0 ${1+"$@"}'
         if 0;
 
-#+END_EXAMPLE
+#+end_src
 
 But that was an obvious hack, and I couldn't resist digging deeper to
 see where things went awry.
@@ -41,7 +41,7 @@ Exercising the bug is a little bit tricky.  When I execute a perl
 script directly on the command line that has the plenv perl shim in
 the shebang, it works fine.
 
-#+BEGIN_EXAMPLE
+#+begin_src sh
 
     # create and test the perl script
     echo '#!/opt/boxen/plenv/shims/perl' > foo.pl
@@ -51,12 +51,12 @@ the shebang, it works fine.
 
     # output: testing 1 2 3
 
-#+END_EXAMPLE
+#+end_src
 
 But when I call that same script from a shell script wrapper, it runs
 into problems:
 
-#+BEGIN_EXAMPLE
+#+begin_src sh
 
     # create and run the shell script wrapper
     echo '#!/usr/bin/env bash' > foo.sh
@@ -66,11 +66,11 @@ into problems:
 
     # output: ./foo.pl: line 2: print: command not found
 
-#+END_EXAMPLE
+#+end_src
 
 Interestingly the bug does not happen if the wrapper script is written in zsh:
 
-#+BEGIN_EXAMPLE
+#+begin_src sh
 
     # create and run the shell script wrapper
     echo '#!/usr/bin/env zsh' > foo.zsh
@@ -80,35 +80,35 @@ Interestingly the bug does not happen if the wrapper script is written in zsh:
 
     # output: testing 1 2 3
 
-#+END_EXAMPLE
+#+end_src
 
 I started looking at the plenv scripts, hoping there might be an easy
 fix.  The shebang in the perl script above points to plenv's perl
 shim, which is actually a bash script.  The shim then runs this
 command:
 
-#+BEGIN_EXAMPLE
+#+begin_src sh
 
     exec /opt/boxen/plenv/libexec/plenv exec perl foo.pl
 
-#+END_EXAMPLE
+#+end_src
 
 The plenv script is also a bash script, which in turn runs:
 
-#+BEGIN_EXAMPLE
+#+begin_src sh
 
     exec /opt/boxen/plenv/libexec/plenv-exec perl foo.pl
 
-#+END_EXAMPLE
+#+end_src
 
 And plenv-exec is also a bash script, which finally runs my script
 with the appropriate version of the perl binary, like so:
 
-#+BEGIN_EXAMPLE
+#+begin_src sh
 
     exec -a perl /opt/boxen/plenv/versions/5.18.1/bin/perl foo.pl
 
-#+END_EXAMPLE
+#+end_src
 
 Somewhere in the stack it was getting confusing and evaluating the
 contents of foo.pl as if it were a bash script.
@@ -125,7 +125,7 @@ a shebang that points at a script that itself begins with a shebang.
 I did not find that to be the case on recent versions of bash on any
 OS I tried:
 
-#+BEGIN_EXAMPLE
+#+begin_src sh
 
     # create the simplest possible bash shim
     echo '#!/usr/bin/env bash' > foo-shim.sh
@@ -140,7 +140,7 @@ OS I tried:
 
     # output: testing 1 2 3
 
-#+END_EXAMPLE
+#+end_src
 
 I submitted a bug report for plenv [[https://github.com/tokuhirom/plenv/issues/63][here]].
 
@@ -148,7 +148,7 @@ From my cursory comparison, it seems that the plenv bash scripts are
 mostly rbenv with s/rbenv/plenv/g and s/ruby/perl/g.  So I was
 assuming this bug would also affect rbenv.  And it appears that is true:
 
-#+BEGIN_EXAMPLE
+#+begin_src sh
 
     # create and test the ruby script
     echo '#!/opt/boxen/rbenv/shims/ruby' > foo.rb
@@ -164,4 +164,5 @@ assuming this bug would also affect rbenv.  And it appears that is true:
     ./foo.sh
     # output: ./foo.rb: line 2: syntax error near unexpected token `"testing 1 2 3"'
 
-#+END_EXAMPLE
+#+end_src
+
