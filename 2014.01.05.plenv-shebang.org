@@ -133,7 +133,28 @@ with nested shebangs on recent versions of bash on any OS I tried.
 
 #+end_src
 
-I submitted a bug report for plenv [[https://github.com/tokuhirom/plenv/issues/63][here]].
+And this example demonstrates the fix from the perlrun manpage:
+
+#+begin_src sh
+  echo '#!/opt/boxen/plenv/shims/perl' > foo.pl
+  echo "eval 'exec perl -x -wS \$0 \${1+\"\$@\"}'" >> foo.pl
+  echo '    if 0;' >> foo.pl
+  echo 'print "testing 1 2 3\n";' >> foo.pl
+  chmod a+x foo.pl
+  ./foo.pl
+  # output: testing 1 2 3
+
+  echo '#!/usr/bin/env bash' > foo.sh
+  echo "./foo.pl" >> foo.sh
+  chmod a+x foo.sh
+  ./foo.sh
+  # output: testing 1 2 3
+
+#+end_src
+
+I submitted a bug report for plenv [[https://github.com/tokuhirom/plenv/issues/63][here]], but I later closed the bug
+since this appears to be more properly classified as an issue with
+bash that affects plenv.
 
 From my cursory comparison, it seems that the plenv bash scripts are
 mostly rbenv with s/rbenv/plenv/g and s/ruby/perl/g.  So I was
@@ -153,5 +174,6 @@ assuming this bug would also affect rbenv.  And it appears that is true:
   chmod a+x foo.sh
   ./foo.sh
   # output: ./foo.rb: line 2: syntax error near unexpected token `"testing 1 2 3"'
+  # output: ./foo.rb: line 2: `puts("testing 1 2 3")'
 
 #+end_src
