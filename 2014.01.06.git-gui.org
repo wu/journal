@@ -35,7 +35,7 @@ text, I started copying/pasting my commit message from emacs.
 
 So I was determined to explore the options in emacs.  After some
 searching and reading, I decided to try out magit.  And I am SO glad I
-did!!!  My emacs config is [[https://github.com/wu/dotfiles/blob/master/emacs/init/08_vcs.el][here]].
+did--it is absolutely fabulous!!!  My emacs config is [[https://github.com/wu/dotfiles/blob/master/emacs/init/08_vcs.el][here]].
 
 I found [[http://www.masteringemacs.org/articles/2013/12/06/introduction-magit-emacs-mode-git/][this article]] to be incredibly helpful.  Here are a few other
 useful links.
@@ -64,7 +64,3 @@ adjust the paths for your environment.
 (set-variable 'magit-emacsclient-executable "/opt/boxen/homebrew/bin/emacsclient --socket-name /tmp/emacs501/server")
 
 #+END_EXAMPLE
-
-
-
-
