@@ -6,3 +6,13 @@
   - [[https://github.com/wu/journal/blob/master/2014.01.05.plenv-shebang.org][2014.01.05 plenv, rbenv, shebang]]
 
   - [[https://github.com/wu/journal/blob/master/2014.01.06.git-gui.org][2014.01.06 git gui, tower, and emacs magit]]
+
+* About
+  :PROPERTIES:
+  :ID:       355137A7-52FD-4EFE-B592-0F5D62B15F3B
+  :END:
+
+I keep all my notes in emacs [[http://orgmode.org][org-mode]].
+
+[[https://github.com/bdewey/org-ruby/tree/master/spec/html_examples][Here]] are some examples of the org-mode rendering on github.
+
