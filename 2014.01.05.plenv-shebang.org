@@ -38,7 +38,7 @@ the shebang, it works fine.
 
 #+begin_src sh
   # create and test the perl script
-  echo '#!/opt/boxen/plenv/shims/perl' > foo.pl
+  echo "#\!$HOME/.plenv/shims/perl" > foo.pl
   echo 'print "testing 1 2 3\n";' >> foo.pl
   chmod a+x foo.pl
   ./foo.pl
@@ -86,14 +86,14 @@ shim, which is actually a bash script.  The shim then runs this
 command:
 
 #+begin_src sh
-  exec /opt/boxen/plenv/libexec/plenv exec perl foo.pl
+  exec $HOME/.plenv/libexec/plenv exec perl foo.pl
 
 #+end_src
 
 The plenv script is also a bash script, which in turn runs:
 
 #+begin_src sh
-  exec /opt/boxen/plenv/libexec/plenv-exec perl foo.pl
+  exec $HOME/.plenv/libexec/plenv-exec perl foo.pl
 
 #+end_src
 
@@ -101,7 +101,7 @@ And plenv-exec is also a bash script, which finally runs my script
 with the appropriate version of the perl binary, like so:
 
 #+begin_src sh
-  exec -a perl /opt/boxen/plenv/versions/5.18.1/bin/perl foo.pl
+  exec -a perl $HOME/.plenv/versions/5.18.1/bin/perl foo.pl
 
 #+end_src
 
@@ -136,7 +136,7 @@ script with perl if it is being evaluated in a shell.
 And that does the trick:
 
 #+begin_src sh
-  echo '#!/opt/boxen/plenv/shims/perl' > foo.pl
+  echo "#\!$HOME/.plenv/shims/perl" > foo.pl
   echo "eval 'exec perl -x -wS \$0 \${1+\"\$@\"}'" >> foo.pl
   echo '    if 0;' >> foo.pl
   echo 'print "testing 1 2 3\n";' >> foo.pl
