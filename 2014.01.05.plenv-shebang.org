@@ -38,7 +38,7 @@ the shebang, it works fine.
 
 #+begin_src sh
   # create and test the perl script
-  echo "#\!$HOME/.plenv/shims/perl" > foo.pl
+  echo '#!'"$HOME/.plenv/shims/perl" > foo.pl
   echo 'print "testing 1 2 3\n";' >> foo.pl
   chmod a+x foo.pl
   ./foo.pl
@@ -118,6 +118,105 @@ I submitted a bug report for plenv [[https://github.com/tokuhirom/plenv/issues/6
 since this appears to be more properly classified as an issue with
 bash that affects plenv.
 
+** subtracting plenv from the equation
+   :PROPERTIES:
+   :ID:       2C3F53F7-6025-4E42-9301-DB5E4B57567A
+   :END:
+
+Here is the underlying issue without plenv.
+
+Start with a plenv-like shim, i.e. a bash script that execs perl.
+Note that it must exec an actual perl binary, which is why it uses
+/usr/bin/perl.  This should not point to your plenv shim.
+
+#+begin_src sh
+  # create the simplest possible shim
+  echo '#!/usr/bin/env bash' > foo-shim
+  echo 'echo exec /usr/bin/perl "$@"' >> foo-shim
+  echo 'exec /usr/bin/perl "$@"' >> foo-shim
+  chmod a+x foo-shim
+
+#+end_src
+
+Next, add a perl script that uses the shim in its shebang.
+
+#+begin_src sh
+  # create a perl script that uses the shim
+  echo '#!'"$(pwd)/foo-shim" > foo.pl
+  echo 'print "testing 1 2 3\n"' >> foo.pl
+  chmod a+x foo.pl
+
+#+end_src
+
+And finally add the shell script wrapper.  When you execute the
+wrapper, you see the bug.
+
+#+begin_src sh
+  # create a perl script that uses the shim
+  echo '#!/usr/bin/env bash' > foo-wrapper.sh
+  echo './foo.pl' >> foo-wrapper.sh
+  chmod a+x foo-wrapper.sh
+  ./foo-wrapper.sh
+
+  # output: ./foo.pl: line 2: print: command not found
+
+#+end_src
+
+** wtf
+   :PROPERTIES:
+   :ID:       5B837CBE-D532-44B5-8620-1B2929AD45F1
+   :END:
+
+A couple of strange things can be observed about the example above.
+
+If you execute the foo.pl script in the example above on OS X or
+FreeBSD, it will go into an infinite loop.  There is an 'echo'
+statement in the shim to make it obvious what it is doing (without
+that line it just appears to hang).
+
+And now for the really weird part.  I thought this was common
+knowledge:
+
+#+begin_src sh
+  # executes the script using the shebang
+  /path/to/script.pl
+
+  # completely ignores the shebang
+  perl /path/to/script.pl
+
+#+end_src
+
+So I was not expecting this behavior:
+
+#+begin_src sh
+
+  # create the bash shim that execs perl
+  echo '#!/usr/bin/env bash' > foo-shim
+  echo 'echo exec /usr/bin/perl "$@"' >> foo-shim
+  echo 'exec /usr/bin/perl "$@"' >> foo-shim
+  chmod a+x foo-shim
+
+  # create a perl script that uses the shim without a shebang
+  echo 'print "testing 1 2 3\n"' >> foo1.pl
+
+  # execute the script, ignoring the shebang
+  /usr/bin/perl foo1.pl
+  # output: testing 1 2 3
+
+  # create an identical shell script plus a shebang
+  echo '#!'"$(pwd)/foo-shim" > foo2.pl
+  echo 'print "testing 1 2 3\n"' >> foo2.pl
+
+  # execute the perl script ignoring the shebang, right?
+  /usr/bin/perl foo2.pl
+
+  # output: exec /usr/bin/perl foo2.pl  [infinite loop]
+
+#+end_src
+
+This works without any issues on Linux.
+
+
 ** perlrun
    :PROPERTIES:
    :ID:       307F8E65-B71F-4E98-8B48-CF25D91B4D39
@@ -136,7 +235,7 @@ script with perl if it is being evaluated in a shell.
 And that does the trick:
 
 #+begin_src sh
-  echo "#\!$HOME/.plenv/shims/perl" > foo.pl
+  echo '#!'"$HOME/.plenv/shims/perl" > foo.pl
   echo "eval 'exec perl -x -wS \$0 \${1+\"\$@\"}'" >> foo.pl
   echo '    if 0;' >> foo.pl
   echo 'print "testing 1 2 3\n";' >> foo.pl
@@ -170,7 +269,7 @@ with nested shebangs on recent versions of bash on any OS I tried.
   chmod a+x foo-shim.sh
 
   # create a bash script that uses the shim
-  echo "#\!$(pwd)/foo-shim.sh" > foo.sh
+  echo '#\!'"$(pwd)/foo-shim.sh" > foo.sh
   echo 'echo "testing 1 2 3"' >> foo.sh
   chmod a+x foo.sh
   ./foo.sh
