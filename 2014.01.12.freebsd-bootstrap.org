@@ -1,0 +1,27 @@
+* FreeBSD bootstrap
+  :PROPERTIES:
+  :ID:       41F327F6-A7FA-4B53-A2DA-7A74ED5E1A01
+  :END:
+
+I maintain a bunch of FreeBSD VMs and a handful of physical machines.
+There are three phases to the build of each box:
+
+  1. base OS and configure network interface
+  2. OS updates and get puppet running
+  3. connect to puppetmaster and finish the build
+
+Here's my process for step #2.
+
+#+begin_src sh
+  # on puppetmaster
+  puppet cert clean {fqdn}
+
+  # on the host being built
+  fetch -o - https://github.com/wu/journal/blob/master/files/freebsd-bootstrap.sh | sh -s {hostname}
+
+  # on puppetmaster
+  puppet cert --sign {fqdn}
+
+#+end_src
+
+More on step #1 and #3 at a later date...
