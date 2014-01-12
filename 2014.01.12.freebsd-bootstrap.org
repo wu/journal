@@ -17,7 +17,7 @@ Here's my process for step #2.
   puppet cert clean {fqdn}
 
   # on the host being built
-  fetch -o - https://github.com/wu/journal/blob/master/files/freebsd-bootstrap.sh | sh -s {hostname}
+  fetch -o - https://raw.github.com/wu/journal/master/files/freebsd-bootstrap.sh | sh -s {hostname}
 
   # on puppetmaster
   puppet cert --sign {fqdn}
