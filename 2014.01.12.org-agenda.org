@@ -1,0 +1,71 @@
+* emacs org-mode agenda
+  :PROPERTIES:
+  :ID:       5B7A2774-6F9E-40BD-BB70-7C4B2CD47D35
+  :END:
+
+I've been through many iterations of refinements on my emacs org-mode
+agenda sorting.  I have been extremely happy with my latest iteration
+over the last few months, so I thought I'd share.
+
+Here's my org-agenda-sorting-strategy:
+
+#+begin_src lisp
+  (setq org-agenda-sorting-strategy
+        (quote ((agenda habit-down time-up scheduled-down deadline-down priority-down category-keep)
+                (todo category-up priority-down effort-up)
+                (tags category-up priority-down effort-up)
+                (search category-up))))
+
+#+end_src
+
+Here's how that breaks down:
+
+  - habit-down - habits are displayed at the very bottom to keep them
+    separated from my normal task list.
+
+  - time-up - entries that are scheduled for a specific time today are
+    on the very top, above everything else.
+
+  - scheduled-down - tasks that are scheduled for today are on top,
+    and tasks that are scheduled for a previous day are sorted by the
+    number of days they are old.
+
+  - deadline-down - deadlines fall below tasks that are scheduled for
+    a specific time today.  Deadlines that are in the future are on
+    top, and deadlines that are overdue are on bottom.
+
+  - priority-down - tasks that are due on the same day are sorted by
+    their priority.
+
+  - category-keep - last sort is by category by sequence in `org-agenda-files'
+
+** my daily workflow
+   :PROPERTIES:
+   :ID:       3384F294-F4C1-4856-B43C-CF7D09CA5AD8
+   :END:
+
+I try to practice ubiquitous capture, so I am constantly adding new
+items to my task lists.  I can be a bit overly optimistic during the
+planning phase, so my task queue does occasionally grow faster than I
+can mark tasks done.  So I find it very useful to treat my task list
+like a queue, with the items sorted by age.  The things I have
+scheduled for today are at the top of my list, sorted by priority.
+Things that have a scheduled date in the past are sorted by the number
+of days they are old.
+
+I can always bring any old task back up near the top of the queue by
+resetting the 'scheduled' date to today.  But I generally try to avoid
+resetting the 'scheduled' date on any item unless I have actually
+worked on that item today.  That way, just by looking at the task in
+my queue, I can tell how long it has been since I've made progress on
+it.  It also makes it really obvious which tasks are getting 'stuck'.
+
+If my task list starts to get impossibly long, I go to the bottom of
+the list to find the tasks that have been untouched for the longest,
+and I add a 'stuck' tag to them.  Then my configuration excludes them
+from my default agenda views.  I have some extra agenda views to see
+the stuck tasks, and a daily task to review them.
+
+My entire emacs-org mode config can be found here
+
+  - https://github.com/wu/dotfiles/blob/master/emacs/init/80_org-mode.el
