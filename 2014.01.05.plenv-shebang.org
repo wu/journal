@@ -196,10 +196,10 @@ So I was not expecting this behavior:
   echo 'exec /usr/bin/perl "$@"' >> foo-shim
   chmod a+x foo-shim
 
-  # create a perl script that uses the shim without a shebang
+  # create a perl script without a shebang
   echo 'print "testing 1 2 3\n"' >> foo1.pl
 
-  # execute the script, ignoring the shebang
+  # execute perl, passing in the path to the script
   /usr/bin/perl foo1.pl
   # output: testing 1 2 3
 
@@ -207,15 +207,17 @@ So I was not expecting this behavior:
   echo '#!'"$(pwd)/foo-shim" > foo2.pl
   echo 'print "testing 1 2 3\n"' >> foo2.pl
 
-  # execute the perl script ignoring the shebang, right?
+  # execute perl, passing in the path to the script
   /usr/bin/perl foo2.pl
 
   # output: exec /usr/bin/perl foo2.pl  [infinite loop]
 
 #+end_src
 
-This works without any issues on Linux.
+Why is it that the mere presence of a shebang line in the file changes
+the behavior here--when in theory the shebang should not be involved?
 
+This works without any issues on Linux.
 
 ** perlrun
    :PROPERTIES:
