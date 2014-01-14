@@ -18,21 +18,23 @@ Here's my org-agenda-sorting-strategy:
 
 #+end_src
 
+[[https://github.com/wu/journal/blob/master/images/2014-01-13.emacs-agenda.png]]
+
 Here's how that breaks down:
 
   - habit-down - habits are displayed at the very bottom to keep them
-    separated from my normal task list.
+    separated from my normal task list [E].
 
   - time-up - entries that are scheduled for a specific time today are
-    on the very top, above everything else.
+    on the very top, above everything else [A].
 
-  - scheduled-down - tasks that are scheduled for today are on top,
-    and tasks that are scheduled for a previous day are sorted by the
-    number of days they are old.
+  - scheduled-down - tasks that are scheduled for today are on top
+    [C], and tasks that are scheduled for a previous day are sorted by
+    the number of days they are old [D].
 
   - deadline-down - deadlines fall below tasks that are scheduled for
-    a specific time today.  Deadlines that are in the future are on
-    top, and deadlines that are overdue are on bottom.
+    a specific time today [B].  Deadlines that are in the future are
+    on top, and deadlines that are overdue are on bottom.
 
   - priority-down - tasks that are due on the same day are sorted by
     their priority.
