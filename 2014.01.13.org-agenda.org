@@ -18,7 +18,7 @@ Here's my org-agenda-sorting-strategy:
 
 #+end_src
 
-[[https://github.com/wu/journal/blob/master/images/2014-01-13.emacs-agenda.png]]
+[[https://raw2.github.com/wu/journal/master/images/2014-01-13.emacs-agenda.png]]
 
 Here's how that breaks down:
 
