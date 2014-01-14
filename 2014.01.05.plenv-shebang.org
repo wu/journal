@@ -162,7 +162,7 @@ wrapper, you see the bug.
 
 #+end_src
 
-** wtf
+*** wtf
    :PROPERTIES:
    :ID:       5B837CBE-D532-44B5-8620-1B2929AD45F1
    :END:
@@ -218,6 +218,22 @@ Why is it that the mere presence of a shebang line in the file changes
 the behavior here--when in theory the shebang should not be involved?
 
 This works without any issues on Linux.
+
+Ok, and here's another one:
+
+#+begin_src sh
+  # create the bash shim that execs perl
+  echo '#!/usr/bin/ruby' > foo
+  echo 'puts("testing 1 2 3")' >> foo
+  chmod a+x foo
+  /usr/bin/perl foo
+
+  # output: testing 1 2 3
+
+#+end_src
+
+Here I called the perl executable and passed it a path that happened
+to contain a ruby script, and it appears that the shebang won!
 
 ** perlrun
    :PROPERTIES:

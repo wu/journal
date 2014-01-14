@@ -8,7 +8,7 @@ There are three phases to the build of each box:
 
   1. base OS and configure network interface
   2. OS updates and get puppet running
-  3. connect to puppetmaster and finish the build
+  3. finish the build with puppet
 
 Here's my process for step #2.
 
