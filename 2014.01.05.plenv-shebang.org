@@ -3,12 +3,11 @@
   :ID:       CCE505BA-A7B7-4AFD-A053-F5154E6A3DE0
   :END:
 
-[[https://github.com/tokuhirom/plenv][Plenv]] is a great tool.  It is the perl version of ruby's [[https://github.com/sstephenson/rbenv][rbenv]].
+[[https://github.com/tokuhirom/plenv][Plenv]] is a great tool.  It is the perl equivalent of ruby's [[https://github.com/sstephenson/rbenv][rbenv]].
 
 After playing around with plenv for a while, I was hooked, and started
 switching over all my projects.  Then I started seeing some strange
-output from some of my cron jobs.  I was seeing error messages like
-this in my logs/email on OS X:
+output from some of my cron jobs on OS X:
 
 #+begin_src sh
   line 3: use: command not found
@@ -17,24 +16,23 @@ this in my logs/email on OS X:
 #+end_src
 
 I looked at it long enough to see that it was confusing, and then I
-put it on the back burner for a while.  A little while later, I
-started seeing a similar problem on Solaris.  So I decided it was time
-to look a little deeper.
+put it on the back burner.  When I started seeing the same problems on
+Solaris, I decided it was time to look a little deeper.
 
 I realized pretty quickly that my perl script was being executed by
-bash rather than by perl.  So the obvious work-around was the secret
-sauce from the perlrun manpage (see below).  But that was clearly a
-hack, and I couldn't resist digging deeper to see where things went
-awry.
+bash rather than by perl.  I knew the work-around was to use the perl
+preamble from the perlrun manpage (see below).  But I also knew that
+was a hack, and I couldn't resist digging deeper to see where things
+were going awry.
 
 ** exercise the bug
    :PROPERTIES:
    :ID:       740A54C1-C4FA-4F69-9065-0005CABFC498
    :END:
 
-Exercising the bug is a little bit tricky.  When I execute a perl
-script directly on the command line that has the plenv perl shim in
-the shebang, it works fine.
+Exercising the bug is a little tricky.  When I execute a perl script
+on the command line with the plenv perl shim in the shebang, it works
+fine.
 
 #+begin_src sh
   # create and test the perl script
@@ -219,7 +217,7 @@ the behavior here--when in theory the shebang should not be involved?
 
 This works without any issues on Linux.
 
-Ok, and here's another one:
+Ok, and here's one more interesting/related thing I found recently:
 
 #+begin_src sh
   # create the bash shim that execs perl
@@ -235,7 +233,7 @@ Ok, and here's another one:
 Here I called the perl executable and passed it a path that happened
 to contain a ruby script, and it appears that the shebang won!
 
-** perlrun
+** perl preamble
    :PROPERTIES:
    :ID:       307F8E65-B71F-4E98-8B48-CF25D91B4D39
    :END:
