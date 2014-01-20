@@ -11,7 +11,7 @@
 
   - [[https://github.com/wu/journal/blob/master/2014.01.13.org-agenda.org][2014.01.13 emacs org-agenda sorting]]
 
-  - [[2014.01.18 highly-available broadband]]
+  - [[https://github.com/wu/journal/blob/master/2014.01.18.highly-available.broadband.org][2014.01.18 highly-available broadband]]
 
 * About
   :PROPERTIES:

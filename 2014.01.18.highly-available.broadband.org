@@ -14,7 +14,7 @@ my current setup is the main intranet switch.
    :ID:       206A42E0-E775-4ECC-A0BA-B8222C2A0B37
    :END:
 
-  - [[https://raw.github.com/wu/journal/master/images/pfsense.png]]
+[[https://raw.github.com/wu/journal/master/images/pfsense.png]]
 
 All IP addresses have been changed. :)
 
