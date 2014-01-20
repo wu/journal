@@ -25,8 +25,9 @@ Here's how that breaks down:
   - habit-down - habits are displayed at the very bottom to keep them
     separated from my normal task list [E].
 
-  - time-up - entries that are scheduled for a specific time today are
-    on the very top, above everything else [A].
+  - time-up - entries that have a scheduled/deadline date at a
+    specific time today are on the very top, above everything else
+    [A].
 
   - scheduled-down - tasks that are scheduled for today are on top
     [C], and tasks that are scheduled for a previous day are sorted by
@@ -46,29 +47,76 @@ Here's how that breaks down:
    :ID:       3384F294-F4C1-4856-B43C-CF7D09CA5AD8
    :END:
 
+Let me start by saying that Emacs org mode is amazing.
+
 I try to practice ubiquitous capture, so I am constantly adding new
-items to my task lists.  I can be a bit overly optimistic during the
-planning phase, so my task queue does occasionally grow faster than I
-can mark tasks done.  So I find it very useful to treat my task list
-like a queue sorted by age.  The things I have scheduled for today are
-at the top of my list, sorted by priority.  Things that are incomplete
-that have a scheduled date in the past are sorted by the number of
-days they are old.
+items to my task lists.  I use a capture template that sends new tasks
+to my inbox.org file.  That way I can quickly input a series of tasks
+without needing to take time to organize them immediately.  The
+default 'scheduled' date is set to the date when the item was added to
+the queue, although I may change it to the date it will be available.
+The 'prepend' option puts the newest entries at the top of the list in
+my inbox.
+
+#+begin_src lisp
+
+(setq org-capture-templates
+      '(("t" "task         [inbox.org]" entry (file+headline "~/org/inbox.org" "Tasks")
+         "* TODO [#B] %?\n   SCHEDULED: <%<%Y-%m-%d %a>>\n\n" :prepend t)
+        )
+      )
+#+end_src
+
+I set up a recurring daily task so that I will refile all items from
+my inbox with org-refile.  In each of my {project}.org files, I have a
+'{project} tasks' level 1 header, under which I file all the general
+tasks for that project.  This makes it easy to find that file/project
+when refiling an item from my inbox:
+
+#+begin_src lisp
+
+; refile targets include this file and any file contributing to the agenda
+(setq org-refile-targets (quote ((nil :maxlevel . 1)
+                                 (org-agenda-files :maxlevel . 1))))
+
+#+end_src
+
+I can be a bit overly optimistic during the planning phase, and my
+task queue does tend to grow faster than it shrinks.  So I find it
+very useful to treat my task list like a queue sorted by age.  The
+things I have scheduled for today are at the top of my list, sorted by
+priority.  Things that are incomplete that have a scheduled date in
+the past are sorted by the number of days they are old.
 
 I can always bring any old task back up near the top of the queue by
 resetting the 'scheduled' date to today.  But I generally try to avoid
-resetting the 'scheduled' date on any item unless I have actually
-worked on that item today.  That way, just by looking at the task in
-my queue, I can tell how long it has been since I've made progress on
-it.  It also makes it really obvious which tasks are getting 'stuck'.
+doing that unless I have actually make progress on the item today.
+That way, just by looking at a task in my queue, I can tell how long
+it has been since I've made progress on it.  This makes it really
+obvious which tasks are getting 'stuck'.
 
-If my task list starts to get impossibly long, I go to the bottom of
-the list to find the tasks that have been untouched for the longest,
-and I add a 'stuck' tag to them.  Then my configuration excludes them
-from my default agenda views.  I have some extra agenda views to see
-my tasks including the stuck tasks; my normal views use lower case
-letters, and my views that include the stuck tasks use the same
-letters in upper case.
+Tasks which are important get done pretty quickly, or stay at the top
+of the list because they are active.  The things that I optimistically
+added to my list but then did not make time to work on will naturally
+sink to the bottom.
+
+If my task list starts to get too long, it gets increasingly
+inefficient to review my task list throughout the day.  So I go to the
+bottom of the list to find the tasks that have been untouched for the
+longest, and I add a 'stuck' tag to them.  Then my configuration
+excludes them from my default agenda views.  I have some extra agenda
+views to see my tasks including the stuck tasks that I review once or
+twice per day.  My normal views use lower case letters, and my views
+that include the stuck tasks use the same letters in upper case.
+
+#+begin_src lisp
+        ("w" "work" agenda ""
+         ((org-agenda-tag-filter-preset '("+work" "-stuck"))
+          ))
+        ("W" "work-stuck" agenda ""
+         ((org-agenda-tag-filter-preset '("+work"))
+          ))
+#+end_src
 
 My entire emacs-org mode config can be found here
 
