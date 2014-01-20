@@ -5,9 +5,9 @@
 
 Here are some notes about my dual-wan setup with hardware redundancy.
 
-My goal here was to be able to yank any cable or lose any device and
-never be dead in the water.  The worst single point of failure in my
-current setup is the main intranet switch.
+My goal here was to be able to yank any cable or lose any single
+device and never be dead in the water.  The most significant [[http://en.wikipedia.org/wiki/Single_point_of_failure][SPOF]] in
+my current setup is the main intranet switch.
 
 ** diagram
    :PROPERTIES:
@@ -16,20 +16,32 @@ current setup is the main intranet switch.
 
   - [[https://raw.github.com/wu/journal/master/images/pfsense.png]]
 
+All IP addresses have been changed. :)
+
 ** hardware
    :PROPERTIES:
    :ID:       D34AB185-1433-435C-8E41-73B638B1B10B
    :END:
 
-I have a couple of these:
+I have a couple of these, which are labeled gw1 and gw2 in the diagram.
 
   - http://store.netgate.com/Netgate-m1n1wall-2D3-2D13-Black-P216C61.aspx
 
 If you plan to go dual-wan with two routers in an HA configuration, I
-don't recommend this setup.  The thing I didn't know when purchasing
-this hardware is that you ideally need a fourth interface to dedicate
-to pfSync.  I currently have my CARP routed over the LAN interface,
-which works great but was a little tricky to get working initially.
+don't recommend this hardware.  The thing I didn't know when
+purchasing this hardware is that you ideally need a fourth interface
+to dedicate to pfSync.  I currently have my CARP routed over the LAN
+interface, which works great but was a little tricky to get working
+initially.
+
+I also have a few older models of these, which are labeled power-01
+and power-02 in the diagram.
+
+  - http://www.digital-loggers.com/lpc.html
+
+I replaced the fans on both of these as they were pretty loud (one was
+particularly noisy).
+
 
 ** pointers
    :PROPERTIES:
@@ -41,5 +53,3 @@ which works great but was a little tricky to get working initially.
   - https://doc.pfsense.org/index.php/Category:High_Availability
 
   - https://doc.pfsense.org/index.php/Multi-WAN_2.0
-
-
