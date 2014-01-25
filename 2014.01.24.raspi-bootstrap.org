@@ -44,8 +44,14 @@ Here's my process for building a raspberry pi.
    :ID:       9A2A4000-93A2-4EF3-AF18-9114E609C1EA
    :END:
 
+I always perform the initial build on my dev raspi, which is mounted
+on a pi dish.  The DHCP server on my [[https://github.com/wu/journal/blob/master/2014.01.18.highly-available.broadband.org][firewall]] gives it a dns entry
+based on the MAC address.  so when I boot up the raspi, I know the
+address in advance.
+
+
 #+begin_src sh
-  # if your dhcp server automatically assigns a dns entry based on dhcp name
+  # make sure the raspi is up
   ping raspberrypi
 
   # default login is pi:raspberry

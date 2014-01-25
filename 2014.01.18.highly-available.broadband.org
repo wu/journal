@@ -3,7 +3,8 @@
   :ID:       9ADE46BA-7EAC-45DC-92CF-59D39BE86A8C
   :END:
 
-Here are some notes about my dual-wan setup with hardware redundancy.
+Here are some notes about my dual-wan setup with hardware redundancy
+using [[http://www.pfsense.org/][pfsense]].
 
 My goal here was to be able to yank any cable or lose any single
 device and never be dead in the water.  The most significant [[http://en.wikipedia.org/wiki/Single_point_of_failure][SPOF]] in
@@ -41,7 +42,6 @@ and power-02 in the diagram.
 
 I replaced the fans on both of these as they were pretty loud (one was
 particularly noisy).
-
 
 ** pointers
    :PROPERTIES:
