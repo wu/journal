@@ -1,0 +1,70 @@
+* Raspberry Pi Bootstrap
+  :PROPERTIES:
+  :ID:       CE4629E1-9126-4F41-9151-FD05247547E0
+  :END:
+
+Here's my process for building a raspberry pi.
+
+** prep the sdcard on OS X
+   :PROPERTIES:
+   :ID:       ED98D2BA-F0B7-460C-82BB-06F8EEED8ADB
+   :END:
+
+# pointers
+http://elinux.org/RPi_Easy_SD_Card_Setup
+
+# Download the image
+http://www.raspberrypi.org/downloads
+
+
+# connect the SD card
+
+# Identify the disk (not partition)
+sudo diskutil list
+
+# partition in Disk Utility.app
+
+# unmount
+diskutil unmountDisk /dev/disk2
+
+# clean format
+sudo newfs_msdos -F 32 -v "RPi" /dev/rdisk2s1
+
+# burn image
+cd ~/projects/rpi/images
+sudo dd if=2013-09-25-wheezy-raspbian.img of=/dev/rdisk2 bs=1m
+
+# eject
+diskutil eject /dev/disk2
+
+
+** boot up the raspberry pi on the SD card
+   :PROPERTIES:
+   :ID:       9A2A4000-93A2-4EF3-AF18-9114E609C1EA
+   :END:
+
+# if your dhcp server automatically assigns a dns entry based on dhcp name
+ping raspberrypi
+
+# default login is pi:raspberry
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no pi@raspberrypi
+
+# expand disk space and set time zone
+sudo raspi-config
+http://elinux.org/RPi_raspi-config
+# reboot
+
+# install puppet
+curl -fsSkL https://raw.github.com/wu/journal/master/files/raspi-bootstrap.sh | sh -s
+
+# set fully qualified hostname
+sudo hostname {hostname}
+
+# double-check model
+cat /proc/cpuinfo
+# '000d' => 'Model B Revision 2.0 512MB', (Egoman)
+# '000e' => 'Model B Revision 2.0 512MB', (Sony)
+# '000f' => 'Model B Revision 2.0 512MB', (Qisda)
+http://www.raspberrypi.org/phpBB3/viewtopic.php?f=66&t=34611&p=293472&hilit=cpuinfo#p293472
+
+# connecting to puppetmaster to complete build
