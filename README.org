@@ -13,6 +13,8 @@
 
   - [[https://github.com/wu/journal/blob/master/2014.01.18.highly-available.broadband.org][2014.01.18 highly-available broadband]]
 
+  - [[https://github.com/wu/journal/blob/master/2014.01.24.raspi-bootstrap.org][2014.01.24 raspberry pi bootstrap]]
+
 * About
   :PROPERTIES:
   :ID:       355137A7-52FD-4EFE-B592-0F5D62B15F3B
