@@ -12,7 +12,7 @@ Here's my process for building a raspberry pi.
 
   - http://elinux.org/RPi_Easy_SD_Card_Setup
 
-  - download the image:
+  - download the latest Raspbian wheezy image here:
     - http://www.raspberrypi.org/downloads
 
   - connect the sd card
