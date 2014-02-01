@@ -31,7 +31,7 @@ Here's my process for building a raspberry pi.
 
   # burn image
   cd ~/projects/rpi/images
-  sudo dd if=2013-09-25-wheezy-raspbian.img of=/dev/rdisk2 bs=1m
+  sudo dd if=2014-01-07-wheezy-raspbian.img of=/dev/rdisk2 bs=1m
 
   # eject
   diskutil eject /dev/disk2
@@ -77,5 +77,3 @@ address in advance.
 
   # connecting to puppetmaster to complete build
 #+end_src
-
-  - http://elinux.org/RPi_raspi-config

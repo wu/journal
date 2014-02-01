@@ -12,7 +12,9 @@ sudo apt-get install rdate                                || exit 1
 
 echo
 echo setting time...
+echo "before: $(date)"
 sudo rdate -s $rdate_server                               || exit 1
+echo "after:  $(date)"
 
 echo
 echo installing ruby
