@@ -23,14 +23,16 @@ figuring out how to find this stuff.
 The first thing I found was the DRC flag in handbrake.  I ran into two
 problems with this setting.
 
-#1 it seems to be hard-wired into the video.  I didn't want to apply
-#this setting to my entire video collection, since I only wanted it
-#turned on at bedtime.  So with this solution, I would need to have a
-#separate 'bedtime' rip of each movie.  The advantage is that it works
-#on any device that can play the media, e.g. a tablet.
+  - it seems to be hard-wired into the video.  I didn't want to apply
+    this setting to my entire video collection, since I only wanted it
+    turned on at bedtime.  So with this solution, I would need to have a
+    separate 'bedtime' rip of each movie.  The advantage is that it works
+    on any device that can play the media, e.g. a tablet.
 
-#2 even at the highest setting, this does not have a significant
-#enough effect to keep from waking me up.  So this was a no-go.
+  - even at the highest setting, this does not have a significant
+    enough effect to keep from waking me up.
+
+The results were that this was a no-go.
 
 ** Audio Hijack Pro
    :PROPERTIES:
