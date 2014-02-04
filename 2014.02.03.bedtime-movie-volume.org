@@ -95,3 +95,11 @@ That way I can still ensure that any loud volumes that manage to get
 through the AUMultibandCompressor will still get clipped.  When
 watching the editor window in the AUPeakLimiter, I can see that very
 little clipping is happening when I play a few loud scenes.
+
+** screenshot
+   :PROPERTIES:
+   :ID:       1F7A7631-BC96-4D83-B43B-BC0CA21B8C2E
+   :END:
+
+[[https://raw.github.com/wu/journal/master/images/audio-hijack-pro.png]]
+
