@@ -86,7 +86,7 @@ slightly.
 The editor window provides a lot of options to control the volume
 curve at different bands.  I didn't really play around with the curves
 much--I went directly to Details and adjusted the Pre-Gain up to
-around 25, and then set the post-gain to around 25.  This has the
+around 25, and then set the post-gain to around 10.  This has the
 effect of slightly pumping up the low volume bits while scaling down
 the high volume bits.  It's perfect!
 
