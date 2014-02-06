@@ -21,7 +21,8 @@ Here's my process for building a raspberry pi.
   # Identify the disk (not partition)
   sudo diskutil list
 
-  # partition in Disk Utility.app
+  # partition
+  sudo diskutil eraseDisk FAT32 RASPI MBRFormat /dev/disk2
 
   # unmount
   diskutil unmountDisk /dev/disk2
