@@ -67,7 +67,7 @@ address in advance.
   curl -fsSkL https://raw.github.com/wu/journal/master/files/raspi-bootstrap.sh | sh -s
 
   # set fully qualified hostname
-  sudo hostname {hostname}
+  sudo hostname {fqdn}
 
   # double-check model
   cat /proc/cpuinfo
@@ -77,4 +77,9 @@ address in advance.
   see: http://www.raspberrypi.org/phpBB3/viewtopic.php?f=66&t=34611&p=293472&hilit=cpuinfo#p293472
 
   # connecting to puppetmaster to complete build
+  sudo puppet agent -v --server puppetmaster --waitforcert 60 --test
+
+  # on puppetmaster
+  puppet cert --sign {fqdn}
+
 #+end_src
