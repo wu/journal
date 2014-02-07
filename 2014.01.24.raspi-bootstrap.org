@@ -77,7 +77,7 @@ address in advance.
   see: http://www.raspberrypi.org/phpBB3/viewtopic.php?f=66&t=34611&p=293472&hilit=cpuinfo#p293472
 
   # connecting to puppetmaster to complete build
-  sudo puppet agent -v --server puppetmaster --waitforcert 60 --test
+  sudo puppet agent -v --server puppetmaster.domain.net --waitforcert 60 --test
 
   # on puppetmaster
   puppet cert --sign {fqdn}

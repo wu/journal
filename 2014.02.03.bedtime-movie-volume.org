@@ -32,14 +32,14 @@ problems with this setting.
   - even at the highest setting, this does not have a significant
     enough effect to keep from waking me up.
 
-The results were that this was a no-go.
+The results were a no-go.
 
 ** Audio Hijack Pro
    :PROPERTIES:
    :ID:       3AF26F25-49C0-40DB-A435-2F0854126FE9
    :END:
 
-I already owned a copy of Audio Hijack Pro that I have used for other
+I already owned a copy of Audio Hijack Pro that I used for other
 purposes, and I was pretty sure it could help do the trick.  But it
 took me a while to find the secret sauce.
 
