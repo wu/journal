@@ -21,8 +21,16 @@ echo installing ruby
 sudo apt-get install ruby                                 || exit 1
 
 echo
+echo installing ruby-dev
+sudo apt-get install ruby-dev                             || exit 1
+
+echo
 echo installing puppet
 sudo gem install --no-ri --no-rdoc --version 3.2.1 puppet || exit 1
+
+echo
+echo installing librarian-puppet
+sudo gem install --no-ri --no-rdoc librarian-puppet || exit 1
 
 echo
 echo CURRENT DATE: $(date)
