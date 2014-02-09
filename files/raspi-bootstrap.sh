@@ -31,7 +31,7 @@ sudo apt-get install ruby                                 || exit 1
 
 echo
 echo installing ruby-dev
-sudo apt-get install ruby-dev                             || exit 1
+echo "Y" | sudo apt-get install ruby-dev                  || exit 1
 
 echo
 echo installing puppet
