@@ -1,7 +1,5 @@
 #!/bin/bash
 
-rdate_server="nist1-la.ustiming.org"
-
 echo
 echo updating dpkg...
 sudo apt-get update                                       || exit 1
@@ -13,7 +11,18 @@ sudo apt-get install rdate                                || exit 1
 echo
 echo setting time...
 echo "before: $(date)"
-sudo timeout 15 rdate -s $rdate_server                    || exit 1
+# http://tf.nist.gov/tf-cgi/servers.cgi
+for server in nist1-la.ustiming.org nist-time-server.eoni.com
+do
+    echo "Attempting to set time from $server..."
+    if sudo timeout 15 rdate -s $server
+    then
+        echo "Success!"
+        break
+    else
+        echo "failed"
+    fi
+done
 echo "after:  $(date)"
 
 echo
