@@ -1,6 +1,7 @@
 * Raspberry Pi Bootstrap
   :PROPERTIES:
   :ID:       CE4629E1-9126-4F41-9151-FD05247547E0
+  :VISIBILITY: all
   :END:
 
 Here's my process for building a raspberry pi.
@@ -30,8 +31,11 @@ Here's my process for building a raspberry pi.
   # clean format
   sudo newfs_msdos -F 32 -v "RPi" /dev/rdisk2s1
 
-  # burn image
+  # set into my raspi images directory
   cd ~/projects/rpi/images
+
+  # burn image, this will take a few minutes
+  # hit ctrl+t to display progress while dd is running
   sudo dd if=2014-01-07-wheezy-raspbian.img of=/dev/rdisk2 bs=1m
 
   # eject
@@ -45,10 +49,9 @@ Here's my process for building a raspberry pi.
    :ID:       9A2A4000-93A2-4EF3-AF18-9114E609C1EA
    :END:
 
-I always perform the initial build on my dev raspi, which is mounted
-on a pi dish.  The DHCP server on my [[https://github.com/wu/journal/blob/master/2014.01.18.highly-available.broadband.org][firewall]] gives it a dns entry
-based on the MAC address.  so when I boot up the raspi, I know the
-address in advance.
+The DHCP server on my [[https://github.com/wu/journal/blob/master/2014.01.18.highly-available.broadband.org][firewall]] gives each raspi a DNS entry based on
+the MAC address.  So when I am re-building a raspi, I know the address
+in advance.
 
 
 #+begin_src sh
@@ -56,11 +59,14 @@ address in advance.
   ping raspberrypi
 
   # default login is pi:raspberry
-  # do not store the ssh key on this hostname, the hostname will be changed in just a minute
+  # do not store the ssh key on this hostname right now, i wait to store
+  # it until i have a successful build
   ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no pi@raspberrypi
 
-  # expand disk space and set time zone, see http://elinux.org/RPi_raspi-config
+  # see http://elinux.org/RPi_raspi-config
   sudo raspi-config
+  # expand disk space
+  # set time zone to US => Pacific-New
   # reboot
 
   # install puppet and prereqs
@@ -74,12 +80,8 @@ address in advance.
   # '000d' => 'Model B Revision 2.0 512MB', (Egoman)
   # '000e' => 'Model B Revision 2.0 512MB', (Sony)
   # '000f' => 'Model B Revision 2.0 512MB', (Qisda)
-  see: http://www.raspberrypi.org/phpBB3/viewtopic.php?f=66&t=34611&p=293472&hilit=cpuinfo#p293472
-
-  # connecting to puppetmaster to complete build
-  sudo puppet agent -v --server puppetmaster.domain.net --waitforcert 60 --test
-
-  # on puppetmaster
-  puppet cert --sign {fqdn}
+  # see: http://www.raspberrypi.org/phpBB3/viewtopic.php?f=66&t=34611&p=293472&hilit=cpuinfo#p293472
 
 #+end_src
+
+The rest is up to puppet.
