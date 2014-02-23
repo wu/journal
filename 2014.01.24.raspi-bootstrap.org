@@ -58,12 +58,23 @@ in advance.
   # make sure the raspi is up
   ping raspberrypi
 
+  # may need to flush OS X dns cache if host was not up when initially
+  # pinged, and the negative response was cached
+  sudo killall -HUP mDNSResponder
+
+  # a note about ssh options: -o UserKnownHostsFile=/dev/null -o
+  # StrictHostKeyChecking=no do not store the ssh key for 'raspberrypi',
+  # otherwise I have to edit my known_hosts file every time I bring up a
+  # new raspi.
+
   # default login is pi:raspberry
-  # do not store the ssh key on this hostname right now, i wait to store
-  # it until i have a successful build
+  # authorize my local ssh key for password-less login
+  ssh-copy-id  -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no pi@raspberrypi
+
+  # log in
   ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no pi@raspberrypi
 
-  # see http://elinux.org/RPi_raspi-config
+  # run raspi-config on first login, see http://elinux.org/RPi_raspi-config
   sudo raspi-config
   # expand disk space
   # set time zone to US => Pacific-New
