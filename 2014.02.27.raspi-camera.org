@@ -103,3 +103,7 @@ I've been using mplayer/netcat to stream video, as described here:
 
   - http://www.raspberrypi.org/camera
 
+I have a script I can run from different machines in my house to send
+a video feed to that host:
+
+  - https://github.com/wu/journal/blob/master/files/raspi-vid.pl
