@@ -1,9 +1,20 @@
-* Pi noir cam
+The raspi camera produces impressively high-quality videos that can be
+streamed over the network at full quality with an great refresh rate.
+I'm hoping to be able to use them to watch over the farm and the
+animals.
+
+* Raspi noir
   :PROPERTIES:
-  :ID:       7CD443C7-0570-46B8-9F63-608330261C23
+  :ID:       7CF8CEA4-DBF4-4666-88A9-209EF9EE290F
   :END:
 
-  - color
+I've just started playing with my raspi noir cameras.
+
+They can't see in the dark without some IR illumination.  So I'm
+searching for a good IR spotlight, e.g. something like these:
+
+  - http://www.amazon.com/CMVision-IR30-WideAngle-IR-Illuminator/dp/B001P2E4U4
+  - http://www.amazon.com/CMVision-IR110-Outdoor-200-300ft-Illuminator/dp/B003ZX1M88
 
 
 * Camera case
@@ -11,7 +22,32 @@
   :ID:       FE97A4CA-073F-4A5F-ACC3-9AD22C837749
   :END:
 
-  - not indoor/outdoor
+I bought a few of these from Maker Shed, 'Nwazet Pi Camera Box'
+
+  - http://nwazet.com/camera-box
+
+Overall I am pretty happy with these.
+
+The stand was a little confusing at first, but it does pivot
+left/right and up/down.
+
+They do not claim to be indoor/outdoor cases, and they certainly are
+not.  I had hoped I could tuck one under the eave of my house,
+sheltered from direct precipitation.  But the raspi would crash every
+night--I assume this was from the condensation.  Admittedly it is the
+rainy season here in the pacific northwest, so YMMV.
+
+Once the stand is mounted, the power cable sticks up out of the top of
+the raspi.  I think it would be a bit easier to work with if the power
+cable could hang downward.
+
+I've seen people recommending to buy fake security cameras, since they
+often have the same weatherproof housing of the real security cameras.
+Then the fake camera can be torn out, and the raspi and camera can be
+placed inside.  I also ordered one of these to use as an external
+case, but I haven't received it yet.
+
+  - http://www.amazon.com/gp/product/B004CA57KW
 
 
 * FOV
@@ -19,10 +55,43 @@
   :ID:       CD8FC81A-1F4F-477A-AFFE-A33E0FC3F156
   :END:
 
-  - optics on fisheye cam with camera case
-    - night vision really bad
+The field of view of the raspi camera is pretty limited compared to a
+security camera.  According to this page, the angle of view is 54 x 41
+degrees:
 
-  - warning about using width/height options in raspivid
+  - http://elinux.org/Rpi_Camera_Module
+
+So it will take some planning to get good camera coverage of an area.
+
+Make sure to avoid the 'width' and 'heigh' options in raspivid, as
+they crop the image and thus reduce the field of view!
+
+** fish-eye
+   :PROPERTIES:
+   :ID:       62ADA09D-CB29-4D1E-8948-EAA8A2D20893
+   :END:
+
+nwazet sells a fish-eye lens that extends the view to 180 degrees:
+
+  - http://nwazet.com/fisheye-lens
+
+The FOV is sweet, but the optics are not very good--as you would have
+to assume from the price.  When mounted under the eaves of the house
+on the second floor, I could see my whole back yard.  I could make out
+individual chickens running around, but I couldn't necessarily tell
+they were chickens most of the time.
+
+Also, great care must be taken to perfectly center the magnetic lens
+on the camera--if it is a little off, then the focus could be really
+bad.  If you have to remove the lens, e.g. to clean it, then you have
+to center it again.  Also if you make other changes to the raspi,
+e.g. move it around or yank the power cable, the magnet won't hold it
+perfectly in place, so you might need to re-adjust it again.  So this
+may not be very useful for a camera mounted for a long period of time.
+
+When using the fish-eye lens in low-lighting conditions, the
+visibility was awful!  Perhaps this is common knowledge to folks who
+know a lot about camera lenses, but it was a surprise to me.
 
 
 * Streaming
@@ -30,12 +99,7 @@
   :ID:       E46950EC-5E52-4AE9-8033-C68A68C8C331
   :END:
 
-  - mplayer command
+I've been using mplayer/netcat to stream video, as described here:
 
-  - my perl script
+  - http://www.raspberrypi.org/camera
 
-
-* Amaxon security camera case
-  :PROPERTIES:
-  :ID:       0435E3AF-3ED5-444E-A4BE-3FEB478C47D8
-  :END:
