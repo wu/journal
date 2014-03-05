@@ -1,0 +1,41 @@
+* Pi noir cam
+  :PROPERTIES:
+  :ID:       7CD443C7-0570-46B8-9F63-608330261C23
+  :END:
+
+  - color
+
+
+* Camera case
+  :PROPERTIES:
+  :ID:       FE97A4CA-073F-4A5F-ACC3-9AD22C837749
+  :END:
+
+  - not indoor/outdoor
+
+
+* FOV
+  :PROPERTIES:
+  :ID:       CD8FC81A-1F4F-477A-AFFE-A33E0FC3F156
+  :END:
+
+  - optics on fisheye cam with camera case
+    - night vision really bad
+
+  - warning about using width/height options in raspivid
+
+
+* Streaming
+  :PROPERTIES:
+  :ID:       E46950EC-5E52-4AE9-8033-C68A68C8C331
+  :END:
+
+  - mplayer command
+
+  - my perl script
+
+
+* Amaxon security camera case
+  :PROPERTIES:
+  :ID:       0435E3AF-3ED5-444E-A4BE-3FEB478C47D8
+  :END:
