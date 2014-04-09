@@ -64,7 +64,7 @@ unless ( $vms_source_h->{ $vmname } ) {
 
 my $vms_target_h = get_vm_list( $ssh_target );
 if ( $vms_target_h->{ $vmname } ) {
-    $logger->fatal( "FATAL: VM already exists on target system $target_host" );
+    $logger->logdie( "FATAL: VM already exists on target system $target_host" );
 }
 
 #############################################################################
