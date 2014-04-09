@@ -11,4 +11,5 @@ physical machines, I first migrate all the VMs over to the other one.
 Here is a little script I recently whipped up to migrate a given VM
 from one physical host to the other.
 
-  [[https://raw.github.com/wu/journal/master/files/vm-migrate][vm-migrate]]
+  - https://github.com/wu/journal/blob/master/files/vm-migrate
+
