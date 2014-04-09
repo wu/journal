@@ -1,0 +1,14 @@
+* FreeBSD VM servers
+  :PROPERTIES:
+  :ID:       83C108D2-02FD-47F0-A518-2CEF5CE54ED7
+  :END:
+
+I have two identical FreeBSD servers at home, on which I run a bunch
+of Virtualbox VMs.  Under normal conditions, around half of the VMs
+are running on each server.  When I want to upgrade one of the
+physical machines, I first migrate all the VMs over to the other one.
+
+Here is a little script I recently whipped up to migrate a given VM
+from one physical host to the other.
+
+  [[https://raw.github.com/wu/journal/master/files/vm-migrate][vm-migrate]]

@@ -1,0 +1,317 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+$| = 1;
+
+use Capture::Tiny;
+use Getopt::Euclid;
+use Log::Log4perl qw(:easy);
+use Net::OpenSSH;
+use Sys::Hostname;
+use YAML;
+
+Log::Log4perl->init(\ <<'EOT');
+  log4perl.category = DEBUG, Screen
+  log4perl.appender.Screen = \
+      Log::Log4perl::Appender::ScreenColoredLevels
+  log4perl.appender.Screen.layout = \
+      Log::Log4perl::Layout::PatternLayout
+  log4perl.appender.Screen.layout.ConversionPattern = \
+      %d %F{1} %L> %m %n
+  log4perl.appender.Screen.color.trace = blue
+  log4perl.appender.Screen.color.debug = cyan
+  log4perl.appender.Screen.color.info  = green
+  log4perl.appender.Screen.color.warn  = magenta
+  log4perl.appender.Screen.color.error = yellow
+  log4perl.appender.Screen.color.fatal = red
+
+EOT
+
+my $logger = Log::Log4perl::get_logger( __PACKAGE__ );
+
+#############################################################################
+# config
+
+my $imagedir = "/tank/vm/export";
+
+my $source_host = $ARGV{-from};
+my $target_host = $ARGV{-to};
+my $vmname      = $ARGV{-vm};
+
+my $image =  "$imagedir/$vmname.ovf";
+my $disk  =  "$imagedir/$vmname-disk1.vmdk";
+
+#############################################################################
+# main
+
+$logger->info( "Connecting to $source_host" );
+my $ssh_source = Net::OpenSSH->new( $source_host );
+$ssh_source->error and
+    $logger->logdie( "Couldn't establish SSH connection: ". $ssh_source->error );
+
+$logger->info( "Connecting to $target_host" );
+my $ssh_target = Net::OpenSSH->new( $target_host );
+$ssh_target->error and
+    $logger->logdie( "Couldn't establish SSH connection: ". $ssh_target->error );
+
+$logger->info( "Getting a list of VMs on $source_host" );
+my $vms_source_h = get_vm_list( $ssh_source );
+
+unless ( $vms_source_h->{ $vmname } ) {
+    $logger->logdie( "ERROR: VM $vmname not found on $source_host" );
+}
+
+my $vms_target_h = get_vm_list( $ssh_target );
+if ( $vms_target_h->{ $vmname } ) {
+    $logger->fatal( "FATAL: VM already exists on target system $target_host" );
+}
+
+#############################################################################
+# shutdown
+
+unless ( $ARGV{'-no-shutdown'} ) {
+    if ( $vms_source_h->{ $vmname }->{active} ) {
+        $logger->warn( "VM is active on $source_host" );
+
+        $logger->info( "Trying to ping VM" );
+        unless ( check_host_alive( $vmname ) ) {
+            $logger->logdie( "ERROR: VM is alive but can't be pinged" );
+        }
+
+        $logger->info( "Connecting to $vmname" );
+        my $ssh_vm = Net::OpenSSH->new( $vmname );
+        $ssh_vm->error and
+            $logger->logdie( "Couldn't establish SSH connection: ". $ssh_vm->error );
+
+        $logger->info( "Shutting down $vmname, may require password for sudo" );
+        $ssh_vm->system(  {tty => 1}, "sudo shutdown -p now" ) or
+            $logger->logdie( "Could not shut down host: ". $ssh_vm->error );
+
+        $logger->warn( "Waiting for VM to finish shutting down..." );
+
+        while ( check_host_alive( $vmname ) ) {
+            sleep 1;
+            print ".";
+        }
+        print "\n";
+
+        $logger->info( "OK: Host no longer responding to pings" );
+
+        # refresh list of VMs to ensure our VM is no longer active
+        $logger->info( "waiting for virtualbox to acknowledge instance is shut down" );
+        while ( $vms_source_h->{ $vmname }->{active} ) {
+            sleep 1;
+            print ".";
+            $vms_source_h = get_vm_list( $ssh_source );
+        }
+        print "\n";
+
+        $logger->info( "OK: confirmed virtualbox instance is no longer running" );
+
+    } else {
+        $logger->warn( "VM is not running on $source_host" );
+
+        $logger->info( "Checking that VM is not pingable" );
+        if ( check_host_alive( $vmname ) ) {
+            $logger->logdie( "FATAL: VM is inactive on $source_host but is still pingable!" );
+        }
+        $logger->info( "OK, VM is not pingable" );
+    }
+}
+
+#############################################################################
+# export
+
+unless ( $ARGV{'-no-export'} ) {
+    for my $file ( $image, $disk ) {
+        if ( $ssh_source->system( "test", "-r", $file ) ) {
+            $logger->warn( "Removing pre-existing file: $file" );
+
+            $ssh_source->system( "rm", $file ) or
+                $logger->logdie( "Failure removing file: $file ". $ssh_source->error );
+        }
+    }
+
+    $logger->info( "Running VM export on $source_host to $image" );
+    $ssh_source->system( "cd $imagedir; VBoxManage export $vmname -o $vmname.ovf" ) or
+        $logger->logdie( "Failure exporting export $vmname ". $ssh_source->error );
+
+    $logger->info( "Generating sha1 checksums" );
+    $ssh_source->system( "cd $imagedir; openssl sha1 $vmname.ovf $vmname-disk\*.vmdk > $vmname.mf" ) or
+        $logger->logdie( "Failure to create checksums ". $ssh_source->error );
+}
+
+#############################################################################
+# rsync
+
+unless ( $ARGV{'-no-rsync'} ) {
+    $logger->info( "Syncing exported VM from $source_host to $target_host" );
+    $ssh_source->system( {tty => 1}, "rsync -ravu --progress $imagedir/ $target_host:$imagedir/" ) or
+        $logger->logdie( "rsync failed: ". $ssh_source->error );
+}
+
+#############################################################################
+# import on target
+
+unless ( $ARGV{'-no-import'} ) {
+    $logger->info( "Importing VM on $target_host" );
+    $ssh_target->system( "VBoxManage import $imagedir/$vmname.ovf" ) or
+        $logger->logdie( "import failed: ". $ssh_target->error );
+
+    for my $option ( '--vrdeauthlibrary null',
+                     '--vrdeproperty VNCPassword=wipeoutXL',
+                 ) {
+
+        $logger->info( "Applying VM option: $option" );
+
+        $ssh_target->system( "VBoxManage modifyvm $vmname $option" ) or
+            $logger->logdie( "modifyvm failed: ". $ssh_target->error );
+    }
+}
+
+
+#############################################################################
+# start vm on target host
+
+unless ( $ARGV{'-no-start'} ) {
+    $logger->info( "Starting VM on $target_host, may require password for sudo" );
+    $ssh_target->system( {tty => 1}, "sudo service vboxheadless start $vmname" ) or
+        $logger->logdie( "startup failed: ". $ssh_target->error );
+
+    $logger->info( "Waiting for startup..." );
+    while ( ! check_host_alive( $vmname ) ) {
+        sleep 1;
+        print ".";
+    }
+    print "\n";
+
+    $logger->info( "Host is now responding to pings!" );
+}
+
+#############################################################################
+# # update vm list in rc.conf with puppet
+
+# [[file:~/projects/puppet/manifests/nodes/bsd-01.subaudi.net.pp::$vboxheadless_machines][bsd-01]]
+# [[file:~/projects/puppet/manifests/nodes/bsd-02.subaudi.net.pp::$vboxheadless_machines][bsd-02]]
+
+#############################################################################
+# validate
+
+# ssh ${vmhost}
+
+#############################################################################
+# unregister VM from original host
+
+# VBoxManage unregistervm ${vmhost} --delete
+
+
+
+
+
+
+#############################################################################
+# Methods
+
+sub check_host_alive {
+    my ( $vm ) = @_;
+
+    my $results;
+
+    my $merged = Capture::Tiny::capture_merged {
+        if ( system( 'ping', '-c', 1, '-t', 3, $vm ) == 0 ) {
+            $results = 1;
+        }
+    };
+
+    return $results;
+}
+
+
+sub get_vm_list {
+    my ( $ssh ) = @_;
+
+    my %vms;
+
+    for my $line ( $ssh->capture("VBoxManage list vms 2>&1") ) {
+        if ( $line =~ m|\"(.*?)\"\s+\{(.*?)\}| ) {
+            $vms{ $1 }->{id} = $2;
+        }
+        else {
+            $logger->warn( $line );
+        }
+    }
+
+    for my $line ( $ssh->capture("VBoxManage list runningvms 2>&1") ) {
+        if ( $line =~ m|\"(.*?)\"\s+\{(.*?)\}| ) {
+            $vms{ $1 }->{active} = 1;
+        }
+        else {
+            $logger->warn( $line );
+        }
+    }
+
+    return \%vms;
+}
+
+__END__
+
+=head1 NAME
+
+vb-migrate - migrate a virtualbox instance from one host to another
+
+=head1 VERSION
+
+=head1 USAGE
+
+    vb-migrate -vm <vnmame> -from <sourcehost> -to <targethost> [options]
+
+=head1 REQUIRED ARGUMENTS
+
+=over
+
+=item  -vm <vmname>
+
+Specify name of the virtual machine.
+
+=item  -from <hostname>
+
+Specify the host on which the VM is currently deployed.
+
+=item  -to <hostname>
+
+Specify host to which the VM should be moved
+
+=back
+
+=head1 OPTIONS
+
+=over
+
+=item -no-shutdown
+
+Skip the shutdown step.
+
+=item -no-export
+
+Skip the export step.
+
+=item -no-rsync
+
+Skip the rsync step.
+
+=item --usage
+
+=item --help
+
+=item --man
+
+Print the usual program information
+
+=back
+
+Remainder of documentation starts here...
+
+=head1 AUTHOR
+
+Alex White (VVu@geekfarm.org)
