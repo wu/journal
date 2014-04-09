@@ -159,15 +159,11 @@ unless ( $ARGV{'-no-import'} ) {
     $ssh_target->system( "VBoxManage import $imagedir/$vmname.ovf" ) or
         $logger->logdie( "import failed: ". $ssh_target->error );
 
-    for my $option ( '--vrdeauthlibrary null',
-                     '--vrdeproperty VNCPassword=wipeoutXL',
-                 ) {
+    $ssh_target->system( "VBoxManage modifyvm $vmname --vrdeauthlibrary null" ) or
+        $logger->logdie( "modifyvm failed: ". $ssh_target->error );
 
-        $logger->info( "Applying VM option: $option" );
-
-        $ssh_target->system( "VBoxManage modifyvm $vmname $option" ) or
-            $logger->logdie( "modifyvm failed: ". $ssh_target->error );
-    }
+    $ssh_target->system( "VBoxManage modifyvm $vmname --vrdeproperty VNCPassword=$ARGV{'-vncpass'}" ) or
+        $logger->logdie( "modifyvm failed: ". $ssh_target->error );
 }
 
 
@@ -186,7 +182,7 @@ unless ( $ARGV{'-no-start'} ) {
     }
     print "\n";
 
-    $logger->info( "Host is now responding to pings!" );
+    $logger->info( "Host is responding to pings!" );
 }
 
 #############################################################################
@@ -281,6 +277,10 @@ Specify the host on which the VM is currently deployed.
 =item  -to <hostname>
 
 Specify host to which the VM should be moved
+
+=item -vncpass <password>
+
+Set the VNC password for the VM.
 
 =back
 
