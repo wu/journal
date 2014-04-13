@@ -1,0 +1,51 @@
+* Subaru ffmpeg
+  :PROPERTIES:
+  :ID:       A35470CC-4207-40DF-AD69-3542ACBE9178
+  :END:
+
+I recently bought a Subaru, and I noticed there was a DivX logo on the
+radio.  After a bit of research, and some trial and error, I was able
+to create videos with ffmpeg that could be played from USB media:
+
+>    ffmpeg -i /path/to/input.mkv -c:v mpeg4 -vtag xvid -vf scale=720:480 -b:v 1M -b:a 192k /path/to/output.avi
+
+I used makemkv to rip to a .mkv file that was approximately 23G from a
+blu-ray.  Then I used ffmpeg to create the final video file.
+
+Note that in order to play the video, you must have the emergency
+engaged, and have the key turned to accessory mode.
+
+* Options
+  :PROPERTIES:
+  :ID:       202B5F98-E2F8-4167-979B-900AE37536D7
+  :END:
+
+>    -vf scale=720:480
+
+I encoded the video at DVD resolution.  I tried higher resolutions
+(720p and 1080p), but I got a 'resolution not supported' error when
+trying to play the videos.
+
+
+>    -c:v mpeg4 -vtag xvid
+
+I used the native mpeg4 encoder here because it ran several times
+faster than the external libxvid.
+
+
+>    -b:v 1M -b:a 192k
+
+I increased the default audio and video bitrates pretty significantly.
+The default settings were too low and the resulting video was not
+watchable.
+
+
+
+* Pointers
+  :PROPERTIES:
+  :ID:       870A3A29-C8DA-4CAA-A697-4CB519EA9585
+  :END:
+
+  - http://www.subaruoutback.org/forums/104-gen-4-2010-2014/50319-divx-video-via-usb-port-success-although-workflow-more-than-most-care.html
+
+  - http://trac.ffmpeg.org/wiki/How%20to%20encode%20Xvid%20/%20DivX%20video%20with%20ffmpeg
