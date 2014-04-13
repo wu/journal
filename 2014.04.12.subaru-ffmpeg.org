@@ -4,7 +4,7 @@
   :END:
 
 I recently bought a Subaru, and I noticed there was a DivX logo on the
-radio.  After a bit of research, and some trial and error, I was able
+radio.  After a bit of research and some trial and error, I was able
 to create videos with ffmpeg that could be played from USB media:
 
 #+begin_src sh
@@ -14,8 +14,9 @@ to create videos with ffmpeg that could be played from USB media:
 I used makemkv to rip to a .mkv file that was approximately 23G from a
 blu-ray.  Then I used ffmpeg to create the final video file.
 
-Note that in order to play the video, you must have the emergency
-engaged, and have the key turned to accessory mode.
+Note that in order to play the video, you must engage the emergency
+brake, and turn the key to accessory mode.  Also I did not have to do
+any sort of DivX registration.
 
 * Options
   :PROPERTIES:
@@ -45,7 +46,8 @@ faster than the external libxvid.
 
 I increased the default audio and video bitrates pretty significantly.
 The default settings were too low and the resulting video was not
-watchable.
+watchable.  These settings look great for XviD (but not nearly as nice
+as h.264).
 
 
 
