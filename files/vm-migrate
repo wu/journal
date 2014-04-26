@@ -45,15 +45,17 @@ my $disk  =  "$imagedir/$vmname-disk1.vmdk";
 #############################################################################
 # main
 
-$logger->info( "Connecting to $source_host" );
+$logger->info( "Connecting to $source_host..." );
 my $ssh_source = Net::OpenSSH->new( $source_host );
 $ssh_source->error and
     $logger->logdie( "Couldn't establish SSH connection: ". $ssh_source->error );
+$logger->info( "...connected" );
 
-$logger->info( "Connecting to $target_host" );
+$logger->info( "Connecting to $target_host..." );
 my $ssh_target = Net::OpenSSH->new( $target_host );
 $ssh_target->error and
     $logger->logdie( "Couldn't establish SSH connection: ". $ssh_target->error );
+$logger->info( "...connected" );
 
 $logger->info( "Getting a list of VMs on $source_host" );
 my $vms_source_h = get_vm_list( $ssh_source );
@@ -299,6 +301,11 @@ Skip the export step.
 =item -no-rsync
 
 Skip the rsync step.
+
+=item -no-import
+
+Skip the import step.
+
 
 =item --usage
 
