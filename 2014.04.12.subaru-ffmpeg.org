@@ -8,15 +8,19 @@ radio.  After a bit of research and some trial and error, I was able
 to create videos with ffmpeg that could be played from USB media:
 
 #+begin_src sh
-    ffmpeg -i /path/to/input.mkv -c:v mpeg4 -vtag xvid -vf scale=720:480 -b:v 1M -b:a 192k /path/to/output.avi
+    ffmpeg -i /path/to/input.mkv -c:v mpeg4 -vtag xvid -vf scale=720:480 -b:v 1.5M -b:a 192k /path/to/output.avi
 #+end_src
 
 I used makemkv to rip to a .mkv file that was approximately 23G from a
 blu-ray.  Then I used ffmpeg to create the final video file.
 
-Note that in order to play the video, you must engage the emergency
-brake, and turn the key to accessory mode.  Also I did not have to do
-any sort of DivX registration.
+The video will initially play in a window, but tapping on the video
+will display it full screen.
+
+The video will only play if the emergency brake is engaged.  If the
+emergency brake is not engaged, the audio will still play, but the
+video will be replaced with a solid blue background.
+
 
 * Options
   :PROPERTIES:
@@ -27,9 +31,7 @@ any sort of DivX registration.
     -vf scale=720:480
 #+end_src
 
-I encoded the video at DVD resolution.  I tried higher resolutions
-(720p and 1080p), but I got a 'resolution not supported' error when
-trying to play the videos.
+I encoded the video at DVD resolution, which is the max.
 
 
 #+begin_src sh
@@ -41,14 +43,12 @@ faster than the external libxvid.
 
 
 #+begin_src sh
-    -b:v 1M -b:a 192k
+    -b:v 1.5M -b:a 192k
 #+end_src
 
 I increased the default audio and video bitrates pretty significantly.
 The default settings were too low and the resulting video was not
-watchable.  These settings look great for XviD (but not nearly as nice
-as h.264).
-
+watchable.  These settings look pretty sweet.
 
 
 * Pointers
