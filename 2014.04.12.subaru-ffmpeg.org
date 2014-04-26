@@ -21,6 +21,7 @@ The video will only play if the emergency brake is engaged.  If the
 emergency brake is not engaged, the audio will still play, but the
 video will be replaced with a solid blue background.
 
+My shell script is [[https://github.com/wu/journal/blob/master/files/ffmpeg-subaru.sh][here]].
 
 * Options
   :PROPERTIES:
