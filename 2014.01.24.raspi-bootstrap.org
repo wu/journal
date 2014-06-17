@@ -93,6 +93,10 @@ in advance.
   # '000f' => 'Model B Revision 2.0 512MB', (Qisda)
   # see: http://www.raspberrypi.org/phpBB3/viewtopic.php?f=66&t=34611&p=293472&hilit=cpuinfo#p293472
 
+  # FIXME: install /root/.cpan/CPAN/MyConfig.pm so i don't have to
+  # interactively configure CPAN.
+  sudo perl -MCPAN -e'install Moose'
+
 #+end_src
 
 The rest is up to puppet.
