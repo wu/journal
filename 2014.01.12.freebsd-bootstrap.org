@@ -1,6 +1,7 @@
 * FreeBSD bootstrap
   :PROPERTIES:
   :ID:       41F327F6-A7FA-4B53-A2DA-7A74ED5E1A01
+  :VISIBILITY: all
   :END:
 
 I maintain a bunch of FreeBSD VMs and a handful of physical machines.
