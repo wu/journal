@@ -95,7 +95,7 @@ in advance.
 
   # FIXME: install /root/.cpan/CPAN/MyConfig.pm so i don't have to
   # interactively configure CPAN.
-  sudo perl -MCPAN -e'install Moose'
+  sudo perl -MCPAN -e'install "YAML"'
 
 #+end_src
 
