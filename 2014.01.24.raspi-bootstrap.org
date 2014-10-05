@@ -67,6 +67,9 @@ in advance.
   # otherwise I have to edit my known_hosts file every time I bring up a
   # new raspi.
 
+  # if you don't have the ssh-copy-id script, install it with:
+  #   brew install ssh-copy-id
+
   # default login is pi:raspberry
   # authorize my local ssh key for password-less login
   ssh-copy-id  -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no pi@devbot
@@ -77,8 +80,8 @@ in advance.
   # run raspi-config on first login, see http://elinux.org/RPi_raspi-config
   sudo raspi-config
   # expand disk space
-  # set time zone to US => Pacific-New
-  # reboot
+  # set time zone: Internationalisation Options => Change timezone => US => Pacific-New
+  # select Finish to reboot
 
   # install puppet and prereqs
   curl -fsSkL https://raw.github.com/wu/journal/master/files/raspi-bootstrap.sh | sh -s
