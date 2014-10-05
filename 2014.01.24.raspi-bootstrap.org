@@ -36,7 +36,7 @@ Here's my process for building a raspberry pi.
 
   # burn image, this will take a few minutes
   # hit ctrl+t to display progress while dd is running
-  sudo dd if=2014-06-20-wheezy-raspbian.img of=/dev/rdisk2 bs=1m
+  sudo dd if=2014-09-09-wheezy-raspbian.img of=/dev/rdisk2 bs=1m
 
   # eject
   diskutil eject /dev/disk2
