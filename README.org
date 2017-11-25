@@ -1,20 +1,3 @@
-* Index
-  :PROPERTIES:
-  :ID:       5B0C3C42-B749-47EF-B4C4-A8BFC1600D10
-  :END:
-
-  - [[https://github.com/wu/journal/blob/master/2014.01.05.plenv-shebang.org][2014.01.05 plenv, rbenv, shebang]]
-
-  - [[https://github.com/wu/journal/blob/master/2014.01.06.git-gui.org][2014.01.06 git gui, tower, and emacs magit]]
-
-  - [[https://github.com/wu/journal/blob/master/2014.01.12.freebsd-bootstrap.org][2014.01.12 freebsd bootstrap]]
-
-  - [[https://github.com/wu/journal/blob/master/2014.01.13.org-agenda.org][2014.01.13 emacs org-agenda sorting]]
-
-  - [[https://github.com/wu/journal/blob/master/2014.01.18.highly-available.broadband.org][2014.01.18 highly-available broadband]]
-
-  - [[https://github.com/wu/journal/blob/master/2014.01.24.raspi-bootstrap.org][2014.01.24 raspberry pi bootstrap]]
-
 * About
   :PROPERTIES:
   :ID:       355137A7-52FD-4EFE-B592-0F5D62B15F3B
