@@ -1,0 +1,176 @@
+* Raspberry Pi Bootstrap
+  :PROPERTIES:
+  :ID:       76b76939-5e85-4aa9-99e5-2e6711f5c0b4
+  :END:
+
+#+begin_src sh
+
+# download latest raspbian image from https://www.raspberrypi.org/downloads/raspbian/
+
+# http://vx2-downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2017-01-10/2017-01-11-raspbian-jessie-lite.zip
+
+ls 2017-09-07-raspbian-stretch-lite.zip
+
+sha256sum 2017-09-07-raspbian-stretch-lite.zip
+bd2c04b94154c9804cc1f3069d15e984c927b750056dd86b9d86a0ad4be97f12  2017-09-07-raspbian-stretch-lite.zip
+
+unzip 2017-09-07-raspbian-stretch-lite.zip
+Archive:  2017-09-07-raspbian-stretch-lite.zip
+  inflating: 2017-09-07-raspbian-stretch-lite.img
+
+sha256sum 2017-09-07-raspbian-stretch-lite.img
+333b6d9b3a4665f793e5b9ac9c86ebc21dec3e8cd01dedcb6eecbb17fbce9b5f  2017-09-07-raspbian-stretch-lite.img
+
+# determine device name
+dmesg | tail
+sudo fdisk -l
+# me: sdc
+
+# burn the image to /dev/sdc
+sudo dd if=2017-09-07-raspbian-stretch-lite.img of=/dev/sdc status=progress
+
+# enable ssh
+sudo mount /dev/sdc1 /mnt
+sudo touch /mnt/ssh
+sudo umount /mnt
+#+end_src
+
+After booting up, I now complete the build in ansible.
+
+
+
+
+
+* Old Raspberry Pi Bootstrap
+  :PROPERTIES:
+  :ID:       CE4629E1-9126-4F41-9151-FD05247547E0
+  :VISIBILITY: all
+  :END:
+
+Here's my process for building a raspberry pi.
+
+** prep the sdcard on OS X
+   :PROPERTIES:
+   :ID:       ED98D2BA-F0B7-460C-82BB-06F8EEED8ADB
+   :END:
+
+  - http://elinux.org/RPi_Easy_SD_Card_Setup
+
+  - download the latest Raspbian wheezy image here:
+    - http://www.raspberrypi.org/downloads
+
+  - connect the sd card
+
+#+begin_src sh
+  # Identify the disk (not partition)
+  sudo diskutil list
+
+  # partition
+  sudo diskutil eraseDisk FAT32 RASPI MBRFormat /dev/disk2
+
+  # unmount
+  diskutil unmountDisk /dev/disk2
+
+  # clean format
+  sudo newfs_msdos -F 32 -v "RPi" /dev/rdisk2s1
+
+  # set into my raspi images directory
+  cd ~/projects/rpi/images
+
+  # burn image, this will take a few minutes
+  # hit ctrl+t to display progress while dd is running
+  sudo dd if=2014-09-09-wheezy-raspbian.img of=/dev/rdisk2 bs=1m
+
+  # eject
+  diskutil eject /dev/disk2
+
+#+end_src
+
+
+** boot up the raspberry pi
+   :PROPERTIES:
+   :ID:       9A2A4000-93A2-4EF3-AF18-9114E609C1EA
+   :END:
+
+The DHCP server on my [[https://github.com/wu/journal/blob/master/2014.01.18.highly-available.broadband.org][firewall]] gives each raspi a DNS entry based on
+the MAC address.  So when I am re-building a raspi, I know the address
+in advance.
+
+
+#+begin_src sh
+  # make sure the raspi is up
+  ping devbot
+
+  # may need to flush OS X dns cache if host was not up when initially
+  # pinged, and the negative response was cached
+  sudo killall -HUP mDNSResponder
+
+  # a note about ssh options: -o UserKnownHostsFile=/dev/null -o
+  # StrictHostKeyChecking=no do not store the ssh key for 'devbot',
+  # otherwise I have to edit my known_hosts file every time I bring up a
+  # new raspi.
+
+  # if you don't have the ssh-copy-id script, install it with:
+  #   brew install ssh-copy-id
+
+  # default login is pi:raspberry
+  # authorize my local ssh key for password-less login
+  ssh-copy-id  -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no pi@devbot
+
+  # log in
+  ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no pi@devbot
+
+  # run raspi-config on first login, see http://elinux.org/RPi_raspi-config
+  sudo raspi-config
+  # expand disk space
+  # set time zone: Internationalisation Options => Change timezone => US => Pacific-New
+  # select Finish to reboot
+
+  # install puppet and prereqs
+  curl -fsSkL https://raw.github.com/wu/journal/master/files/raspi-bootstrap.sh | sh -s
+
+  # FIXME: install /root/.cpan/CPAN/MyConfig.pm so i don't have to
+  # interactively configure CPAN.
+  sudo perl -MCPAN -e'install "YAML"'
+
+  # set fully qualified hostname
+  sudo hostname {fqdn}
+
+  # double-check model
+  cat /proc/cpuinfo
+  # '000d' => 'Model B Revision 2.0 512MB', (Egoman)
+  # '000e' => 'Model B Revision 2.0 512MB', (Sony)
+  # '000f' => 'Model B Revision 2.0 512MB', (Qisda)
+  # see: http://www.raspberrypi.org/phpBB3/viewtopic.php?f=66&t=34611&p=293472&hilit=cpuinfo#p293472
+
+#+end_src
+
+The rest is up to puppet.
+
+
+* /proc/cpuinfo
+  :PROPERTIES:
+  :ID:       76730bd8-ebcd-4a13-ba76-aee7cb7ead06
+  :END:
+
+  - http://ozzmaker.com/check-raspberry-software-hardware-version-command-line/
+
+  - http://elinux.org/RPi_HardwareHistory
+
+| Model and Pi Revision                                  | 256MB | Hardware Revision Code from cpuinfo |
+| Model B Revision 1.0                                   | 256MB | 0002                                |
+| Model B Revision 1.0 + ECN0001 (no fuses, D14 removed) | 256MB | 0003                                |
+| Model B Revision 2.0 Mounting holes                    | 256MB | 0004 0005 0006                      |
+| Model A Mounting holes                                 | 256MB | 0007 0008 0009                      |
+| Model B Revision 2.0 Mounting holes                    | 512MB | 000d 000e 000f                      |
+| Model B+                                               | 512MB | 0010                                |
+| Compute Module                                         | 512MB | 0011                                |
+| Model A+                                               | 256MB | 0012                                |
+| Pi 2 Model B                                           | 1GB   | a01041 (Sony, UK)                   |
+| Pi 2 Model B                                           | 1GB   | a21041 (Embest, China)              |
+| PiZero                                                 | 512MB | 900092(no camera connector)         |
+| PiZero                                                 | 512MB | 900093(camera connector)            |
+| Pi 3 Model B                                           | 1GB   | a02082 (Sony, UK)                   |
+| Pi 3 Model B                                           | 1GB   | a22082 (Embest, China)              |
+| PiZero W                                               | 512MB | 9000c1                              |
+
