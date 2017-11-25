@@ -1,5 +1,48 @@
 * Raspberry Pi Bootstrap
   :PROPERTIES:
+  :ID:       76b76939-5e85-4aa9-99e5-2e6711f5c0b4
+  :END:
+
+#+begin_src sh
+
+# download latest raspbian image from https://www.raspberrypi.org/downloads/raspbian/
+
+# http://vx2-downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2017-01-10/2017-01-11-raspbian-jessie-lite.zip
+
+ls 2017-09-07-raspbian-stretch-lite.zip
+
+sha256sum 2017-09-07-raspbian-stretch-lite.zip
+bd2c04b94154c9804cc1f3069d15e984c927b750056dd86b9d86a0ad4be97f12  2017-09-07-raspbian-stretch-lite.zip
+
+unzip 2017-09-07-raspbian-stretch-lite.zip
+Archive:  2017-09-07-raspbian-stretch-lite.zip
+  inflating: 2017-09-07-raspbian-stretch-lite.img
+
+sha256sum 2017-09-07-raspbian-stretch-lite.img
+333b6d9b3a4665f793e5b9ac9c86ebc21dec3e8cd01dedcb6eecbb17fbce9b5f  2017-09-07-raspbian-stretch-lite.img
+
+# determine device name
+dmesg | tail
+sudo fdisk -l
+# me: sdc
+
+# burn the image to /dev/sdc
+sudo dd if=2017-09-07-raspbian-stretch-lite.img of=/dev/sdc status=progress
+
+# enable ssh
+sudo mount /dev/sdc1 /mnt
+sudo touch /mnt/ssh
+sudo umount /mnt
+#+end_src
+
+After booting up, I now complete the build in ansible.
+
+
+
+
+
+* Old Raspberry Pi Bootstrap
+  :PROPERTIES:
   :ID:       CE4629E1-9126-4F41-9151-FD05247547E0
   :VISIBILITY: all
   :END:
