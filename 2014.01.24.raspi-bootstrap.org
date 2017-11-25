@@ -1,1 +1,1 @@
-updated: https://github.com/wu/journal/blob/master/2014.01.24.raspi-bootstrap.org
+updated: https://github.com/wu/journal/blob/master/2017.11.24.raspi-bootstrap.org
