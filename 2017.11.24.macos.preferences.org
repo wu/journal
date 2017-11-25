@@ -57,12 +57,12 @@ defaults -currentHost read com.apple.screensaver
 #+end_src
 
 Instead of using 'write' for these settings, export to plist and
-convert the plist to xml.  Then edit or save the xaml.  When you are
+convert the plist to xml.  Then edit or save the xml.  When you are
 ready to install it, convert the xml back to binary, and re-import.
 
 #+begin_src sh
 # export
-defaults -currentHost export com.apple.screensaver  screensaver.plist
+defaults -currentHost export com.apple.screensaver screensaver.plist
 
 # make plain text
 plutil -convert xml1 screensaver.plist
