@@ -1,0 +1,33 @@
+#!/bin/bash
+
+defaults -currentHost read > defaults.currenthost.1
+defaults -currentHost read -g > defaults.currenthost.global.1
+defaults read > defaults.1
+defaults read -g > defaults.global.1
+
+echo "Change setting and press enter..."
+read
+
+defaults -currentHost read > defaults.currenthost.2
+defaults -currentHost read -g > defaults.currenthost.global.2
+defaults read > defaults.2
+defaults read -g > defaults.global.2
+
+echo
+echo "Diff currenthost defaults"
+diff defaults.currenthost.1 defaults.currenthost.2
+
+echo
+echo "Diff currenthost global defaults"
+diff defaults.currenthost.global.1 defaults.currenthost.global.2
+
+echo
+echo "Diff defaults"
+diff defaults.1 defaults.2
+
+echo
+echo "Diff global defaults"
+diff defaults.global.1 defaults.global.2
+
+#rm defaults.*.1 defaults.*.2
+

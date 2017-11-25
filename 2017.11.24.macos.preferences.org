@@ -1,0 +1,77 @@
+* MacOS Preferences
+  :PROPERTIES:
+  :ID:       7b410497-b8e7-4226-87ea-078b00d7b7b8
+  :END:
+
+I prefer nuke-and-pave style upgrades, so when a new version of MacOS
+comes out, I always create a boot disk, wipe my hard drive, and
+install from scratch.  The first thing that needs to be done when I
+boot up in the new OS is to customize the Preferences.  So, I went
+looking for a way to automate the process from the command line.
+
+Here's the script I use today:
+
+
+  - https://github.com/wu/journal/blob/master/files/update-osx-prefs.sh
+
+
+* Discovering properties
+  :PROPERTIES:
+  :ID:       8900fdbf-ef72-46fe-8291-e6186d1cb1a8
+  :END:
+
+The names of many of the default keys are not obvious or discoverable.
+So when I want to add a property to my script, I need to figure out
+what the property is named, and how to set the values.
+
+After some trail and error, I created this script, which captures all
+the defaults to temporary files.  Then it pauses and waits for you to
+change a setting in the preferences.  When the setting is done, hit
+return and the settings will be captured again.  Then differences
+between the two files will be reported.
+
+  - https://github.com/wu/journal/blob/master/files/check-defaults
+
+
+* Complex
+  :PROPERTIES:
+  :ID:       5978d381-6e6c-4252-b666-3c0c2db3adfc
+  :END:
+
+Some values are complex multi-line data structures, for example, the
+screensaver.
+
+#+begin_src sh
+
+defaults -currentHost read com.apple.screensaver
+{
+    CleanExit = YES;
+    PrefsVersion = 100;
+    moduleDict =     {
+        moduleName = Arabesque;
+        path = "/System/Library/Screen Savers/Arabesque.saver";
+        type = 0;
+    };
+    tokenRemovalAction = 0;
+}
+#+end_src
+
+Instead of using 'write' for these settings, export to plist and
+convert the plist to xml.  Then edit or save the xaml.  When you are
+ready to install it, convert the xml back to binary, and re-import.
+
+#+begin_src sh
+# export
+defaults -currentHost export com.apple.screensaver  screensaver.plist
+
+# make plain text
+plutil -convert xml1 screensaver.plist
+
+# edit the file and set your preferences
+
+# make binary again
+plutil -convert binary1 screensaver.plist
+
+# import
+defaults -currentHost import com.apple.screensaver screensaver.plist
+#+end_src
